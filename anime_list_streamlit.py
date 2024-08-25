@@ -5,7 +5,6 @@ import os
 
 # API configuration using your credentials
 CLIENT_ID = 'dfe48b7bb1e8af63efd5cd846dee89db'
-CLIENT_SECRET = 'd274243d7ee468bc77bbb4451b4b21dc4b5627d824cb2b257ae3e72f6054903a'
 
 WATCHLIST_FILE = 'watchlist.json'
 
