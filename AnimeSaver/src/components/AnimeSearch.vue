@@ -14,17 +14,13 @@
                 </div>
             </div>
         </div>
-        <div v-else>
-            <p>No anime found.</p>
-        </div>
-        <div class="pagination-controls">
+        <div v-if="animeList.length > 0" class="pagination-controls">
             <button @click="prevPage" :disabled="currentPage <= 1">Previous</button>
+            <span class="page-number">Page {{ currentPage }}</span>
             <button @click="nextPage" :disabled="animeList.length < limit">Next</button>
         </div>
     </div>
 </template>
-
-
 
 <script>
 export default {
@@ -38,38 +34,40 @@ export default {
     },
     methods: {
         async searchAnime() {
+            this.currentPage = 1; // Reset to page 1 on new search
+            await this.fetchAnimeData();
+        },
+        async fetchAnimeData() {
+            const offset = (this.currentPage - 1) * this.limit;
             try {
-                const offset = (this.currentPage - 1) * this.limit;
-                console.log(`Fetching data: Page ${this.currentPage}, Offset ${offset}`);
                 const response = await fetch(`http://localhost:5000/api/anime/search?q=${this.query}&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
                 const data = await response.json();
-                console.log('API Response:', data.data);
                 if (Array.isArray(data.data)) {
                     this.animeList = data.data.map(item => item.node);
                 } else {
                     console.error('Data is not an array:', data);
-                    this.animeList = [];  // Reset animeList if data is not in expected format
+                    this.animeList = [];
                 }
             } catch (error) {
                 console.error('Error fetching anime data:', error);
+                this.animeList = [];
             }
         },
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.searchAnime();
+                this.fetchAnimeData();
             }
         },
         nextPage() {
             if (this.animeList.length === this.limit) {
                 this.currentPage++;
-                this.searchAnime();
+                this.fetchAnimeData();
             }
         }
     }
 };
 </script>
-
 
 
 <style scoped>
@@ -127,6 +125,11 @@ export default {
     background-color: #411d7a;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease;
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
 }
 
 .anime-card:hover {
@@ -143,9 +146,13 @@ export default {
 
 /* Styling for the details section */
 .anime-details {
+    height: 100%;
     padding: 16px;
     color: white;
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .anime-title {
@@ -193,5 +200,13 @@ export default {
 .pagination-controls button:disabled {
     background-color: #d6d6d6;
     cursor: not-allowed;
+}
+
+.pagination-controls {
+    margin-top: 20px;
+}
+
+.page-number {
+    margin: 0 15px;
 }
 </style>
