@@ -34,10 +34,8 @@ export default {
 
 /* Centered container styling */
 .container {
-  padding: 40px;
-  width: 100%;
-  max-width: 1200px;
-  text-align: center;
+  width: 100vw;
+  margin-inline: auto;
 }
 
 /* Main heading style */

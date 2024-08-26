@@ -112,7 +112,7 @@ export default {
 /* Styling for the grid container */
 .anime-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 16px;
     margin-top: 20px;
 }
@@ -138,7 +138,7 @@ export default {
 
 /* Styling for the image */
 img.anime-image {
-    height: 300px;
+    height: 320px;
     width: 100%;
     display: block;
     object-fit: cover;
@@ -159,20 +159,24 @@ img.anime-image {
     font-size: 20px;
     margin: 0;
     margin-bottom: 8px;
-    overflow: hidden;
     font-weight: 600;
+    overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    line-height: 1.4;
+    line-clamp: 2;
+    /* add this for standard compatibility */
+
 }
 
 /* Rating text styling */
 .anime-rating-text {
     font-size: 14px;
-    color: #c2c2c2;
+    font-weight: 600;
+
+    color: #ffe600;
+
     margin: 0;
 }
 
