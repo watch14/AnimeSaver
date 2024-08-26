@@ -130,25 +130,11 @@ const auth = {
     try {
       // Make a GET request to fetch the user's saved anime list
       const response = await axios.get(`/user/${userId}`);
-      console.log("User anime list:", response.data);
-      return response.data.anime_list || [];
+      console.log("User anime list:", response.data.savedList);
+      return response.data.savedList || [];
     } catch (error) {
       console.error("Error fetching user anime list:", error);
       return [];
-    }
-  },
-  async loadUserAnimeList() {
-    try {
-      // Fetch user data from the auth service
-      const userData = await auth.getUserAnimeList();
-
-      // Extract the list of anime IDs
-      this.userAnimeList = userData.savedList.map((item) => item.id);
-
-      console.log("User anime list loaded:", this.userAnimeList);
-    } catch (error) {
-      console.error("Error fetching user anime list:", error);
-      this.userAnimeList = [];
     }
   },
 };

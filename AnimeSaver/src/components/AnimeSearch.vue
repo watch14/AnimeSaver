@@ -13,7 +13,7 @@
                     <div class="rating-container">
                         <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
                         <button @click="handleAddAnime(anime.id)" class="log-button">
-                            {{ userAnimeList.includes(anime.id) ? 'Remove from List' : 'Add to List' }}
+                            {{ isAnimeInUserList(anime.id) ? 'Remove from List' : 'Add to List' }}
                         </button>
                     </div>
                 </div>
@@ -37,16 +37,16 @@ export default {
             animeList: [],
             currentPage: 1,
             limit: 14,
-            userAnimeList: []
+            userAnimeList: [] // This will hold the IDs of the anime saved by the user
         };
     },
     async created() {
-        await this.loadUserAnimeList();
+        await this.loadUserAnimeList(); // Load the user's anime list when the component is created
     },
     methods: {
         async searchAnime() {
             this.currentPage = 1;
-            await this.fetchAnimeData();
+            await this.fetchAnimeData(); // Fetch anime data based on the search query
         },
         async fetchAnimeData() {
             const offset = (this.currentPage - 1) * this.limit;
@@ -66,22 +66,26 @@ export default {
         },
         async loadUserAnimeList() {
             try {
-                this.userAnimeList = await auth.getUserAnimeList();
+                const userAnimeObjects = await auth.getUserAnimeList();
+                this.userAnimeList = userAnimeObjects.map(anime => anime.id.toString()); // Extract only the IDs and convert them to strings
             } catch (error) {
                 console.error('Error fetching user anime list:', error);
                 this.userAnimeList = [];
             }
         },
+        isAnimeInUserList(animeId) {
+            return this.userAnimeList.includes(animeId.toString()); // Check if the anime ID is in the user's list
+        },
         async handleAddAnime(animeId) {
             const loggedIn = await auth.isLoggedIn();
             if (loggedIn) {
                 try {
-                    if (this.userAnimeList.includes(animeId)) {
-                        await auth.removeAnimeFromUserList(animeId);
-                        this.userAnimeList = this.userAnimeList.filter(id => id !== animeId);
+                    if (this.isAnimeInUserList(animeId)) {
+                        await auth.removeAnimeFromUserList(animeId); // Remove anime from the user's list
+                        this.userAnimeList = this.userAnimeList.filter(id => id !== animeId.toString());
                     } else {
-                        await auth.addAnimeToUserList(animeId);
-                        this.userAnimeList.push(animeId);
+                        await auth.addAnimeToUserList(animeId); // Add anime to the user's list
+                        this.userAnimeList.push(animeId.toString());
                     }
                 } catch (error) {
                     console.error('Error updating user anime list:', error);
@@ -105,6 +109,8 @@ export default {
     }
 };
 </script>
+
+
 
 <style scoped>
 /* Styling for the container */
