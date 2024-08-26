@@ -3,6 +3,7 @@ from flask_pymongo import PyMongo
 from flasgger import Swagger
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS  # Import CORS
 
 load_dotenv()
 
@@ -14,6 +15,8 @@ mongo = PyMongo(app)
 
 # Initialize Swagger
 swagger = Swagger(app)
+
+CORS(app)
 
 def create_app():
     # Import blueprints inside the function to avoid circular imports

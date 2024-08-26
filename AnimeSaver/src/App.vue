@@ -1,47 +1,67 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div id="app">
+    <div class="container">
+      <AnimeSearch />
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script>
+import AnimeSearch from './components/AnimeSearch.vue';
+
+export default {
+  name: 'App',
+  components: {
+    AnimeSearch
+  }
+};
+</script>
+
+<style>
+/* Full-page container for centering */
+#app {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  margin-inline: auto;
+
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+/* Centered container styling */
+.container {
+  padding: 40px;
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+/* Main heading style */
+h1 {
+  color: #5b22b6;
+  margin-bottom: 20px;
+  font-size: 2.5em;
+  font-weight: 600;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+/* Improve readability for text */
+body {
+  margin: 0;
+  padding: 0;
+  color: #333;
+  font-size: 16px;
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+/* Global styles for links */
+a {
+  color: #5b22b6;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 </style>
