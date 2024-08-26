@@ -15,7 +15,6 @@
     </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 
@@ -42,17 +41,20 @@ export default {
                     console.log('User ID:', userId);
                     // Save userId to localStorage
                     localStorage.setItem('userId', userId);
+                    // Show success message
+                    alert('Login successful!');
                     // Optionally, redirect to another page or update UI
+                    this.$router.push('/');
                 } else {
-                    console.error('Login failed:', response.data.message);
+                    alert('Login failed: ' + response.data.message);
                 }
             } catch (error) {
                 if (error.response) {
-                    console.error('Response error:', error.response.data.message || error.message);
+                    alert('Login failed: ' + (error.response.data.message || error.message));
                 } else if (error.request) {
-                    console.error('Request error:', error.request);
+                    alert('Login failed: No response from server.');
                 } else {
-                    console.error('Setup error:', error.message);
+                    alert('Login failed: ' + error.message);
                 }
             }
         }
@@ -86,15 +88,12 @@ form {
     background-color: #f7f7f7;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-
-
 }
 
 h1 {
     text-align: center;
     margin-bottom: 20px;
 }
-
 
 input {
     width: 100%;
@@ -116,6 +115,4 @@ button {
 button:hover {
     background-color: #411d7a;
 }
-
-;
-</style>;
+</style>

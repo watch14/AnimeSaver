@@ -4,15 +4,36 @@
             <h1>Anime Finder</h1>
         </div>
         <nav>
-            <router-link to="/">Home</router-link>
-            <router-link to="/login">Login</router-link>
+            <!-- Conditional rendering based on login status -->
+            <router-link v-if="!loggedIn" to="/login">Login</router-link>
+            <router-link v-if="!loggedIn" to="/register">Register</router-link>
+            <button v-if="loggedIn" @click="handleLogout">Logout</button>
         </nav>
     </header>
 </template>
 
 <script>
+import auth from '../utils/auth.js'; // Adjust the import path based on your file structure
+
 export default {
-    name: 'Header'
+    name: 'Header',
+    data() {
+        return {
+            loggedIn: false
+        };
+    },
+    async created() {
+        // Check if the user is logged in when the component is created
+        this.loggedIn = await auth.isLoggedIn();
+    },
+    methods: {
+        async handleLogout() {
+            await auth.logout();
+            this.loggedIn = false;
+            // Optionally, redirect to home or login page
+            this.$router.push('/'); // Redirect to home page
+        }
+    }
 };
 </script>
 
@@ -38,6 +59,18 @@ nav a {
 }
 
 nav a:hover {
+    text-decoration: underline;
+}
+
+button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
     text-decoration: underline;
 }
 </style>
