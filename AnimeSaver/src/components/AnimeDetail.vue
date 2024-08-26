@@ -2,6 +2,18 @@
     <div class="anime-detail-container">
         <div class="anime-image-left">
             <img :src="anime.main_picture?.large" alt="Anime image" class="anime-image" />
+            <!-- Only show Add/Remove button if anime is in the user's list -->
+            <button v-if="isAnimeInUserList" @click="handleAddRemoveAnime" class="log-button">
+                Remove from List
+            </button>
+            <button v-else @click="handleAddRemoveAnime" class="log-button">
+                Add to List
+            </button>
+            <!-- Only show Watched/Unwatched button if anime is in the user's list -->
+            <button v-if="isAnimeInUserList" @click="handleWatchedStatus"
+                :class="['watched-button', { 'watched': isAnimeWatched, 'unwatched': !isAnimeWatched }]">
+                {{ isAnimeWatched ? 'Mark as Unwatched' : 'Mark as Watched' }}
+            </button>
         </div>
         <div class="anime-info-right">
             <h1 class="anime-title">{{ anime.title }}</h1>
@@ -9,16 +21,18 @@
             </p>
             <p class="anime-detail-text"><strong>Episodes:</strong> {{ anime.num_episodes }}</p>
             <p class="anime-date-text">{{ formatDates(anime.start_date, anime.end_date) }}</p>
-
             <p class="anime-detail-text"><strong>Genres:</strong> {{ anime.genres?.map(genre => genre.name).join(', ')
                 }}</p>
-            <p class="anime-detail-text"><strong>Synopsis:</strong> {{ anime.synopsis || 'No synopsis available.' }}</p>
             <p class="anime-detail-text"><strong>Status:</strong> {{ formatStatus(anime.status) }}</p>
+            <p class="anime-detail-text"><strong>Synopsis:</strong> {{ anime.synopsis || 'No synopsis available.' }}</p>
         </div>
     </div>
 </template>
 
+
 <script>
+import auth from '@/utils/auth'; // Adjust the path as needed
+
 export default {
     props: {
         id: {
@@ -28,11 +42,15 @@ export default {
     },
     data() {
         return {
-            anime: {}
+            anime: {},
+            isAnimeInUserList: false, // Track if the anime is in the user's list
+            isAnimeWatched: false // Track if the anime is watched
         };
     },
     async created() {
         await this.fetchAnimeDetail();
+        await this.checkIfAnimeInUserList();
+        await this.checkIfAnimeWatched();
     },
     methods: {
         async fetchAnimeDetail() {
@@ -46,6 +64,64 @@ export default {
                 this.anime = data;
             } catch (error) {
                 console.error("Error fetching anime detail:", error);
+            }
+        },
+        async checkIfAnimeInUserList() {
+            try {
+                const userAnimeObjects = await auth.getUserAnimeList();
+                const userAnimeList = userAnimeObjects.map(anime => anime.id.toString());
+                this.isAnimeInUserList = userAnimeList.includes(this.id.toString());
+            } catch (error) {
+                console.error('Error fetching user anime list:', error);
+                this.isAnimeInUserList = false;
+            }
+        },
+        async checkIfAnimeWatched() {
+            if (this.isAnimeInUserList) {
+                try {
+                    const userAnimeObjects = await auth.getUserAnimeList();
+                    const animeObject = userAnimeObjects.find(anime => anime.id.toString() === this.id.toString());
+                    this.isAnimeWatched = animeObject ? animeObject.watched : false;
+                } catch (error) {
+                    console.error('Error fetching user anime list:', error);
+                    this.isAnimeWatched = false;
+                }
+            }
+        },
+        async handleAddRemoveAnime() {
+            const loggedIn = await auth.isLoggedIn();
+            if (loggedIn) {
+                try {
+                    if (this.isAnimeInUserList) {
+                        await auth.removeAnimeFromUserList(this.id);
+                    } else {
+                        await auth.addAnimeToUserList(this.id);
+                    }
+                    await this.checkIfAnimeInUserList(); // Refresh list status
+                    if (this.isAnimeInUserList) {
+                        await this.checkIfAnimeWatched(); // Refresh watched status if it's in the list
+                    }
+                } catch (error) {
+                    console.error('Error updating user anime list:', error);
+                    alert('Error updating anime list. Please try again.');
+                }
+            } else {
+                alert('Please log in to add or remove anime from your list.');
+            }
+        },
+        async handleWatchedStatus() {
+            const loggedIn = await auth.isLoggedIn();
+            if (loggedIn) {
+                try {
+                    const newStatus = !this.isAnimeWatched; // Toggle watched status
+                    await auth.updateAnimeWatchedStatus(this.id, newStatus);
+                    this.isAnimeWatched = newStatus; // Update the state
+                } catch (error) {
+                    console.error('Error updating watched status:', error);
+                    alert('Error updating watched status. Please try again.');
+                }
+            } else {
+                alert('Please log in to mark anime as watched or unwatched.');
             }
         },
         formatDates(start, end) {
@@ -70,14 +146,14 @@ export default {
 };
 </script>
 
+
+
 <style scoped>
 .anime-detail-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    gap: 20px;
-    /* grid-template-columns: 1fr 2fr; */
-    gap: 20px;
+    gap: 40px;
     padding: 60px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -85,12 +161,59 @@ export default {
     margin-inline: auto;
 }
 
-
-
 .anime-image {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
+}
+
+.log-button {
+    padding: 10px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #7a2cf8;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.log-button:hover {
+    background-color: #6c15f8;
+}
+
+.watched-button {
+    padding: 10px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.watched-button.watched {
+    background-color: #4caf50;
+    /* Green color for watched */
+}
+
+.watched-button.watched:hover {
+    background-color: #47c74b;
+}
+
+.watched-button.unwatched {
+    background-color: #f56c6c;
+    /* Red color for unwatched */
+}
+
+.watched-button.unwatched:hover {
+    background-color: #d43f3a;
 }
 
 .anime-date-text {
@@ -113,7 +236,6 @@ export default {
     font-size: 36px;
     font-weight: 600;
     margin: 0;
-
 }
 
 .anime-detail-text {

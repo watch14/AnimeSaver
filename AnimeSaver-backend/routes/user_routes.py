@@ -380,6 +380,73 @@ def add_anime_to_watchlist(user_id):
 
     return jsonify({"message": "Anime added to watchlist"}), 200
 
+@bp.route('/user/<user_id>/update_anime', methods=['PUT'])
+@swag_from({
+    'tags': ['Anime'],
+    'parameters': [
+        {
+            'name': 'user_id',
+            'in': 'path',
+            'type': 'string',
+            'required': True,
+            'description': 'User ID'
+        },
+        {
+            'name': 'body',
+            'in': 'body',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'anime_id': {'type': 'string'},
+                    'watched': {'type': 'boolean'}
+                },
+                'required': ['anime_id', 'watched']
+            }
+        }
+    ],
+    'responses': {
+        '200': {
+            'description': 'Anime watched status updated',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        },
+        '400': {
+            'description': 'Bad request',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        },
+        '404': {
+            'description': 'User or Anime not found',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        }
+    }
+})
+def update_anime_watched_status(user_id):
+    data = request.get_json()
+    anime_id = data.get('anime_id')
+    watched = data.get('watched')  # Must be provided and boolean
+
+    if not anime_id or watched is None:
+        return jsonify({"message": "Anime ID and watched status must be provided"}), 400
+
+    mongo = get_mongo()
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    # Check if the anime is in the user's savedList
+    anime_entry = next((anime for anime in user.get('savedList', []) if anime['id'] == anime_id), None)
+
+    if not anime_entry:
+        return jsonify({"message": "Anime not found in watchlist"}), 404
+
+    # Update the watched status
+    mongo.db.users.update_one(
+        {"_id": ObjectId(user_id), "savedList.id": anime_id},
+        {"$set": {"savedList.$.watched": watched}}
+    )
+
+    return jsonify({"message": "Anime watched status updated"}), 200
+
 @bp.route('/user/<user_id>/remove_anime', methods=['DELETE'])
 @swag_from({
     'tags': ['Anime'],

@@ -111,12 +111,12 @@ const auth = {
       console.error("Error fetching user data:", error);
     }
   },
+
   /**
    * Fetch the list of anime IDs saved by the user.
    * @returns {Promise<string[]>} - Returns a promise that resolves to an array of anime IDs.
    */
   async getUserAnimeList() {
-    // Check if the user is logged in
     const loggedIn = await this.isLoggedIn();
 
     if (!loggedIn) {
@@ -124,17 +124,63 @@ const auth = {
       return [];
     }
 
-    // Get the userId from localStorage
     const userId = localStorage.getItem("userId");
 
     try {
-      // Make a GET request to fetch the user's saved anime list
       const response = await axios.get(`/user/${userId}`);
       console.log("User anime list:", response.data.savedList);
       return response.data.savedList || [];
     } catch (error) {
       console.error("Error fetching user anime list:", error);
       return [];
+    }
+  },
+
+  /**
+   * Update the watched status of an anime for the logged-in user.
+   * @param {string} animeId - The ID of the anime to update.
+   * @param {boolean} watchedStatus - The new watched status.
+   * @returns {Promise<void>} - Returns a promise that resolves when the status is updated.
+   */
+  async updateAnimeWatchedStatus(animeId, watchedStatus) {
+    const loggedIn = await this.isLoggedIn();
+
+    if (!loggedIn) {
+      alert("Please log in to update the watched status.");
+      return;
+    }
+
+    const userId = localStorage.getItem("userId");
+
+    try {
+      const response = await axios.put(
+        `/user/${userId}/update_anime`,
+        {
+          anime_id: animeId,
+          watched: watchedStatus,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(
+          `Anime with ID ${animeId} updated to watched status: ${watchedStatus}`
+        );
+      } else {
+        console.error(`Unexpected status code: ${response.status}`);
+        alert("Unexpected response from the server. Please try again.");
+      }
+    } catch (error) {
+      console.error(
+        "Error updating watched status:",
+        error.response ? error.response.data : error.message
+      );
+      alert("Error updating watched status. Please try again.");
     }
   },
 };
