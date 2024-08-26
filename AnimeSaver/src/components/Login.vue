@@ -3,8 +3,8 @@
         <h1>Login</h1>
         <form @submit.prevent="handleLogin">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" v-model="username" required />
+                <label for="username">Email:</label>
+                <input type="text" id="username" v-model="email" required /> <!-- Changed 'username' to 'email' -->
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
@@ -15,21 +15,46 @@
     </div>
 </template>
 
+
 <script>
+import axios from 'axios';
+
+// Set the base URL for axios
+axios.defaults.baseURL = 'http://localhost:5000';
+
 export default {
     data() {
         return {
-            username: '',
+            email: '',
             password: ''
         };
     },
     methods: {
-        handleLogin() {
-            // Placeholder for login logic
-            console.log('Username:', this.username);
-            console.log('Password:', this.password);
-            // Redirect to home or perform actual login action
+        async handleLogin() {
+            try {
+                const response = await axios.post('/login', {
+                    userEmail: this.email,
+                    userPassword: this.password
+                });
 
+                if (response.status === 200) {
+                    const userId = response.data.userId;
+                    console.log('User ID:', userId);
+                    // Save userId to localStorage
+                    localStorage.setItem('userId', userId);
+                    // Optionally, redirect to another page or update UI
+                } else {
+                    console.error('Login failed:', response.data.message);
+                }
+            } catch (error) {
+                if (error.response) {
+                    console.error('Response error:', error.response.data.message || error.message);
+                } else if (error.request) {
+                    console.error('Request error:', error.request);
+                } else {
+                    console.error('Setup error:', error.message);
+                }
+            }
         }
     }
 };

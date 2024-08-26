@@ -4,7 +4,6 @@ from bson.objectid import ObjectId
 from flasgger import swag_from
 from app import mongo
 import requests
-import os
 
 bp = Blueprint('user_routes', __name__)
 
@@ -59,6 +58,16 @@ def register():
     if not user_name or not user_email or not user_password:
         return jsonify({"message": "Missing required fields"}), 400
 
+    mongo = get_mongo()
+    # Check if username or email already exists
+    existing_user = mongo.db.users.find_one({"$or": [{"userName": user_name}, {"userEmail": user_email}]})
+    if existing_user:
+        if existing_user.get('userName') == user_name:
+            return jsonify({"message": "Username already exists"}), 400
+        if existing_user.get('userEmail') == user_email:
+            return jsonify({"message": "Email already exists"}), 400
+
+    # If no existing user is found, proceed to create a new user
     hashed_password = bcrypt.hashpw(user_password.encode('utf-8'), bcrypt.gensalt())
     
     user = {
@@ -68,7 +77,6 @@ def register():
         "savedList": [],
         "isAdmin": is_admin
     }
-    mongo = get_mongo()
     mongo.db.users.insert_one(user)
     return jsonify({"message": "User registered successfully!"}), 201
 
@@ -108,7 +116,7 @@ def login():
     mongo = get_mongo()
     user = mongo.db.users.find_one({"userEmail": user_email})
     if user and bcrypt.checkpw(user_password.encode('utf-8'), user['userPassword']):
-        return jsonify({"message": "Login successful!", "isAdmin": user.get('isAdmin', False)}), 200
+        return jsonify({"message": "Login successful!", "userId": str(user["_id"])}), 200
     return jsonify({"message": "Invalid email or password!"}), 401
 
 def serialize_document(doc):
@@ -303,7 +311,6 @@ def delete_user(user_id):
     if result.deleted_count:
         return jsonify({"message": "User deleted successfully!"}), 200
     return jsonify({"message": "User not found!"}), 404
-
 
 @bp.route('/user/<user_id>/add_anime', methods=['POST'])
 @swag_from({

@@ -16,7 +16,7 @@ mongo = PyMongo(app)
 # Initialize Swagger
 swagger = Swagger(app)
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins (adjust as needed)
 
 def create_app():
     # Import blueprints inside the function to avoid circular imports
