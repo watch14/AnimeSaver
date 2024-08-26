@@ -15,11 +15,16 @@ mongo = PyMongo(app)
 # Initialize Swagger
 swagger = Swagger(app)
 
-# Import routes
-from routes import user_routes, admin_routes
+def create_app():
+    # Import blueprints inside the function to avoid circular imports
+    from routes.user_routes import bp as user_bp
+    from routes.admin_routes import bp as admin_bp
 
-app.register_blueprint(user_routes.bp)
-app.register_blueprint(admin_routes.bp)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(admin_bp)
+
+    return app
 
 if __name__ == '__main__':
+    app = create_app()
     app.run(debug=True)

@@ -1,16 +1,17 @@
 from flask import Blueprint, jsonify, request
-from flask_pymongo import PyMongo
 from functools import wraps
 
-# Import MongoDB connection
-from app import mongo
-
 bp = Blueprint('admin_routes', __name__)
+
+def get_mongo():
+    from app import mongo
+    return mongo
 
 def admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         user_email = request.headers.get('User-Email')
+        mongo = get_mongo()
         user = mongo.db.users.find_one({"userEmail": user_email})
         if not user or not user.get('isAdmin', False):
             return jsonify({"message": "Admin access required!"}), 403
