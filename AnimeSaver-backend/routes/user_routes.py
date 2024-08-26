@@ -3,12 +3,18 @@ import bcrypt
 from bson.objectid import ObjectId
 from flasgger import swag_from
 from app import mongo
+import requests
+import os
 
 bp = Blueprint('user_routes', __name__)
 
 def get_mongo():
     from app import mongo
     return mongo
+
+# API configuration
+CLIENT_ID = 'dfe48b7bb1e8af63efd5cd846dee89db'
+MYANIMELIST_API_URL = 'https://api.myanimelist.net/v2/anime'
 
 @bp.route('/register', methods=['POST'])
 @swag_from({
@@ -113,40 +119,40 @@ def serialize_document(doc):
     return doc
 
 @bp.route('/user/<user_id>', methods=['GET'])
+@swag_from({
+    'tags': ['User'],
+    'parameters': [
+        {
+            'name': 'user_id',
+            'in': 'path',
+            'type': 'string',
+            'required': True,
+            'description': 'User ID'
+        }
+    ],
+    'responses': {
+        '200': {
+            'description': 'User found',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'userName': {'type': 'string'},
+                    'userEmail': {'type': 'string'},
+                    'savedList': {
+                        'type': 'array',
+                        'items': {'type': 'string'}
+                    },
+                    '_id': {'type': 'string'}
+                }
+            }
+        },
+        '404': {
+            'description': 'User not found',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        }
+    }
+})
 def get_user(user_id):
-    """
-    Get user by ID
-    ---
-    tags:
-      - User
-    parameters:
-      - name: user_id
-        in: path
-        type: string
-        required: true
-        description: User's ID
-    responses:
-      200:
-        description: User found
-        schema:
-          id: User
-          properties:
-            userName:
-              type: string
-              description: User's name
-            userEmail:
-              type: string
-              description: User's email
-            savedList:
-              type: array
-              items:
-                type: string
-            _id:
-              type: string
-              description: User ID
-      404:
-        description: User not found
-    """
     try:
         mongo = get_mongo()
         user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
@@ -157,37 +163,34 @@ def get_user(user_id):
         return jsonify({"error": str(e)}), 500
 
 @bp.route('/users', methods=['GET'])
+@swag_from({
+    'tags': ['User'],
+    'responses': {
+        '200': {
+            'description': 'List of all users',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'userName': {'type': 'string'},
+                        'userEmail': {'type': 'string'},
+                        'savedList': {
+                            'type': 'array',
+                            'items': {'type': 'string'}
+                        },
+                        '_id': {'type': 'string'}
+                    }
+                }
+            }
+        },
+        '500': {
+            'description': 'Internal server error',
+            'schema': {'type': 'object', 'properties': {'error': {'type': 'string'}}}
+        }
+    }
+})
 def get_all_users():
-    """
-    Get all users
-    ---
-    tags:
-      - User
-    responses:
-      200:
-        description: List of all users
-        schema:
-          type: array
-          items:
-            type: object
-            properties:
-              userName:
-                type: string
-                description: User's name
-              userEmail:
-                type: string
-                description: User's email
-              savedList:
-                type: array
-                items:
-                  type: string
-                description: List of saved anime IDs
-              _id:
-                type: string
-                description: User ID
-      500:
-        description: Internal server error
-    """
     try:
         mongo = get_mongo()
         users = mongo.db.users.find()
@@ -300,3 +303,190 @@ def delete_user(user_id):
     if result.deleted_count:
         return jsonify({"message": "User deleted successfully!"}), 200
     return jsonify({"message": "User not found!"}), 404
+
+@bp.route('/search_anime', methods=['GET'])
+@swag_from({
+    'tags': ['Anime'],
+    'parameters': [
+        {
+            'name': 'query',
+            'in': 'query',
+            'type': 'string',
+            'required': True,
+            'description': 'Search query for anime'
+        }
+    ],
+    'responses': {
+        '200': {
+            'description': 'Search results for anime',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'id': {'type': 'string'},
+                        'title': {'type': 'string'},
+                        'main_picture': {'type': 'object', 'properties': {'medium': {'type': 'string'}}},
+                        'synopsis': {'type': 'string'},
+                        'mean': {'type': 'number'},
+                        'num_episodes': {'type': 'integer'},
+                        'start_date': {'type': 'string', 'format': 'date'},
+                        'end_date': {'type': 'string', 'format': 'date'},
+                        'genres': {
+                            'type': 'array',
+                            'items': {'type': 'object', 'properties': {'name': {'type': 'string'}}}
+                        },
+                        'status': {'type': 'string'}
+                    }
+                }
+            }
+        },
+        '400': {
+            'description': 'Bad request',
+            'schema': {'type': 'object', 'properties': {'error': {'type': 'string'}}}
+        },
+        '500': {
+            'description': 'Internal server error',
+            'schema': {'type': 'object', 'properties': {'error': {'type': 'string'}}}
+        }
+    }
+})
+def search_anime():
+    query = request.args.get('query')
+    if not query:
+        return jsonify({"error": "No query parameter provided"}), 400
+
+    url = f'{MYANIMELIST_API_URL}?q={query}&limit=10&fields=id,title,main_picture,synopsis,mean,num_episodes,start_date,end_date,genres,status'
+    headers = {
+        'X-MAL-CLIENT-ID': CLIENT_ID
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json().get('data', [])
+        return jsonify(data)
+    except requests.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+
+@bp.route('/user/<user_id>/add_anime', methods=['POST'])
+@swag_from({
+    'tags': ['Anime'],
+    'parameters': [
+        {
+            'name': 'user_id',
+            'in': 'path',
+            'type': 'string',
+            'required': True,
+            'description': 'User ID'
+        },
+        {
+            'name': 'body',
+            'in': 'body',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'anime_id': {'type': 'string'}
+                },
+                'required': ['anime_id']
+            }
+        }
+    ],
+    'responses': {
+        '200': {
+            'description': 'Anime added to watchlist',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        },
+        '400': {
+            'description': 'Bad request',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        },
+        '404': {
+            'description': 'User not found',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        }
+    }
+})
+def add_anime_to_watchlist(user_id):
+    data = request.get_json()
+    anime_id = data.get('anime_id')
+
+    if not anime_id:
+        return jsonify({"message": "Anime ID not provided"}), 400
+
+    mongo = get_mongo()
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    if 'savedList' not in user:
+        user['savedList'] = []
+
+    if any(anime['id'] == anime_id for anime in user['savedList']):
+        return jsonify({"message": "Anime already in watchlist"}), 400
+
+    mongo.db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$push": {"savedList": {"id": anime_id}}}
+    )
+
+    return jsonify({"message": "Anime added to watchlist"}), 200
+
+@bp.route('/user/<user_id>/remove_anime', methods=['POST'])
+@swag_from({
+    'tags': ['Anime'],
+    'parameters': [
+        {
+            'name': 'user_id',
+            'in': 'path',
+            'type': 'string',
+            'required': True,
+            'description': 'User ID'
+        },
+        {
+            'name': 'body',
+            'in': 'body',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'anime_id': {'type': 'string'}
+                },
+                'required': ['anime_id']
+            }
+        }
+    ],
+    'responses': {
+        '200': {
+            'description': 'Anime removed from watchlist',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        },
+        '400': {
+            'description': 'Bad request',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        },
+        '404': {
+            'description': 'User not found',
+            'schema': {'type': 'object', 'properties': {'message': {'type': 'string'}}}
+        }
+    }
+})
+def remove_anime_from_watchlist(user_id):
+    data = request.get_json()
+    anime_id = data.get('anime_id')
+
+    if not anime_id:
+        return jsonify({"message": "Anime ID not provided"}), 400
+
+    mongo = get_mongo()
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    mongo.db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$pull": {"savedList": {"id": anime_id}}}
+    )
+
+    return jsonify({"message": "Anime removed from watchlist"}), 200

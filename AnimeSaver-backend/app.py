@@ -19,9 +19,11 @@ def create_app():
     # Import blueprints inside the function to avoid circular imports
     from routes.user_routes import bp as user_bp
     from routes.admin_routes import bp as admin_bp
+    from routes.anime_routes import anime_bp  # Import the new anime blueprint
 
     app.register_blueprint(user_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(anime_bp, url_prefix='/api')  # Register with a URL prefix
 
     return app
 
