@@ -322,7 +322,8 @@ def delete_user(user_id):
             'schema': {
                 'type': 'object',
                 'properties': {
-                    'anime_id': {'type': 'string'}
+                    'anime_id': {'type': 'string'},
+                    'watched': {'type': 'boolean'}
                 },
                 'required': ['anime_id']
             }
@@ -346,6 +347,7 @@ def delete_user(user_id):
 def add_anime_to_watchlist(user_id):
     data = request.get_json()
     anime_id = data.get('anime_id')
+    watched = data.get('watched', False)  # Default to False if not provided
 
     if not anime_id:
         return jsonify({"message": "Anime ID not provided"}), 400
@@ -359,12 +361,14 @@ def add_anime_to_watchlist(user_id):
     if 'savedList' not in user:
         user['savedList'] = []
 
+    # Check if the anime is already in the watchlist
     if any(anime['id'] == anime_id for anime in user['savedList']):
         return jsonify({"message": "Anime already in watchlist"}), 400
 
+    # Add the anime to the watchlist with the watched status
     mongo.db.users.update_one(
         {"_id": ObjectId(user_id)},
-        {"$push": {"savedList": {"id": anime_id}}}
+        {"$push": {"savedList": {"id": anime_id, "watched": watched}}}
     )
 
     return jsonify({"message": "Anime added to watchlist"}), 200
