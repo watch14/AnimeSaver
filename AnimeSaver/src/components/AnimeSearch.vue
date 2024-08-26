@@ -7,7 +7,7 @@
         </div>
         <div v-if="animeList.length > 0" class="anime-grid">
             <div v-for="anime in animeList" :key="anime.id" class="anime-card">
-                <img :src="anime.main_picture?.medium" alt="Anime image" class="anime-image" />
+                <img :src="anime.main_picture?.large" alt="Anime image" class="anime-image" />
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
                     <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
@@ -137,9 +137,9 @@ export default {
 }
 
 /* Styling for the image */
-.anime-image {
-    width: 100%;
+img.anime-image {
     height: 300px;
+    width: 100%;
     display: block;
     object-fit: cover;
 }
@@ -160,12 +160,13 @@ export default {
     margin: 0;
     margin-bottom: 8px;
     overflow: hidden;
+    font-weight: 600;
     text-overflow: ellipsis;
     display: -webkit-box;
 
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    line-height: 1.2;
+    line-height: 1.4;
 }
 
 /* Rating text styling */
@@ -173,7 +174,6 @@ export default {
     font-size: 14px;
     color: #c2c2c2;
     margin: 0;
-    margin-top: auto;
 }
 
 /* Styling for pagination controls */
