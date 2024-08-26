@@ -433,7 +433,7 @@ def add_anime_to_watchlist(user_id):
 
     return jsonify({"message": "Anime added to watchlist"}), 200
 
-@bp.route('/user/<user_id>/remove_anime', methods=['POST'])
+@bp.route('/user/<user_id>/remove_anime', methods=['DELETE'])
 @swag_from({
     'tags': ['Anime'],
     'parameters': [
