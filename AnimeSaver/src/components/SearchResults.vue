@@ -1,5 +1,5 @@
 <template>
-    <div class="anime-search-container">
+    <div class="search-results-container">
         <h1>Search</h1>
         <div class="search-bar">
             <input v-model="query" @keyup.enter="searchAnime" placeholder="Search for anime..." class="search-input" />
@@ -28,14 +28,13 @@
     </div>
 </template>
 
-
 <script>
 import auth from '@/utils/auth'; // Adjust the path as needed
 
 export default {
     data() {
         return {
-            query: '',
+            query: this.$route.query.q || '',
             animeList: [],
             currentPage: 1,
             limit: 14,
@@ -44,13 +43,18 @@ export default {
     },
     async created() {
         await this.loadUserAnimeList(); // Load the user's anime list when the component is created
+        await this.fetchAnimeData(); // Fetch anime data based on the initial query
+    },
+    watch: {
+        '$route.query.q': 'fetchAnimeData' // Watch for changes in the query parameter and fetch new data
     },
     methods: {
         async searchAnime() {
             this.currentPage = 1;
-            await this.fetchAnimeData(); // Fetch anime data based on the search query
+            this.$router.push({ name: 'SearchResults', query: { q: this.query } });
         },
         async fetchAnimeData() {
+            this.query = this.$route.query.q || ''; // Update the query from the route
             const offset = (this.currentPage - 1) * this.limit;
             try {
                 const response = await fetch(`http://localhost:5000/api/anime/search?q=${this.query}&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
@@ -97,7 +101,6 @@ export default {
             }
         },
         goToAnimePage(animeId) {
-            // Navigate to the AnimeDetail route with the anime ID as a parameter
             this.$router.push({ name: 'AnimeDetail', params: { id: animeId.toString() } });
         },
         prevPage() {
@@ -116,11 +119,10 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
+/* Reuse styles from the previous search results page */
 /* Styling for the container */
-.anime-search-container {
+.search-results-container {
     text-align: center;
     padding: 20px;
 }
