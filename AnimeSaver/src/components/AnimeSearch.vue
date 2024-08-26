@@ -7,7 +7,8 @@
         </div>
         <div v-if="animeList.length > 0" class="anime-grid">
             <div v-for="anime in animeList" :key="anime.id" class="anime-card">
-                <img :src="anime.main_picture?.large" alt="Anime image" class="anime-image" />
+                <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
+                    class="anime-image" />
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
                     <div class="rating-container">
@@ -26,6 +27,7 @@
         </div>
     </div>
 </template>
+
 
 <script>
 import auth from '@/utils/auth'; // Adjust the path as needed
@@ -93,6 +95,10 @@ export default {
             } else {
                 alert('Please log in to add or remove anime from your list.');
             }
+        },
+        goToAnimePage(animeId) {
+            // Navigate to the AnimeDetail route with the anime ID as a parameter
+            this.$router.push({ name: 'AnimeDetail', params: { id: animeId.toString() } });
         },
         prevPage() {
             if (this.currentPage > 1) {

@@ -1,7 +1,10 @@
 <template>
     <header class="header">
         <div class="logo">
-            <h1>Anime Finder</h1>
+
+            <router-link to="/">
+                <h1>AnimeSaver</h1>
+            </router-link>
         </div>
         <nav>
             <!-- Conditional rendering based on login status -->
