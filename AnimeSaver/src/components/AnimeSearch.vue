@@ -1,6 +1,6 @@
 <template>
     <div class="anime-search-container">
-        <h1>Anime Search</h1>
+        <h1>Search</h1>
         <div class="search-bar">
             <input v-model="query" @keyup.enter="searchAnime" placeholder="Search for anime..." class="search-input" />
             <button @click="searchAnime" class="search-button">Search</button>

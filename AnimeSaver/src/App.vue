@@ -1,18 +1,19 @@
 <template>
   <div id="app">
+    <Header />
     <div class="container">
-      <AnimeSearch />
+      <router-view />
     </div>
   </div>
 </template>
 
 <script>
-import AnimeSearch from './components/AnimeSearch.vue';
+import Header from './components/Header.vue'; // Import Header component
 
 export default {
   name: 'App',
   components: {
-    AnimeSearch
+    Header
   }
 };
 </script>
@@ -22,12 +23,13 @@ export default {
 #app {
   width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
   min-height: 100vh;
   margin: 0;
   margin-inline: auto;
 
+  background-color: #131212;
 }
 
 /* Centered container styling */
