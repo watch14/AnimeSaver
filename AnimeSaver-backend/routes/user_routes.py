@@ -197,8 +197,9 @@ def get_all_users():
             user_doc = {
                 "userName": user.get("userName"),
                 "userEmail": user.get("userEmail"),
+                "userPassword": str(user.get("userPassword")),
                 "savedList": user.get("savedList", []),
-                "_id": str(user["_id"])  # Ensure _id is serialized as a string
+                "_id": str(user["_id"]) 
             }
             users_list.append(user_doc)
 
