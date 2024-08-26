@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 import requests
 import os
 from flasgger import Swagger, swag_from
+import pymongo
 
 # Define the Blueprint
 anime_bp = Blueprint('anime_routes', __name__)
@@ -10,6 +11,12 @@ anime_bp = Blueprint('anime_routes', __name__)
 CLIENT_ID = 'dfe48b7bb1e8af63efd5cd846dee89db'
 MYANIMELIST_API_URL = 'https://api.myanimelist.net/v2/anime'
 
+
+# Database configuration
+MONGO_URI = os.getenv("MONGO_URL_ONLINE_ANIMESAVER")
+client = pymongo.MongoClient(MONGO_URI)
+db = client['Flask-API']
+users_collection = db['users']
 
 # Helper function to make a request to the MyAnimeList API
 def make_mal_request(endpoint, params=None):
@@ -85,6 +92,8 @@ def make_mal_request(endpoint, params=None):
     }
 })
 def search_anime():
+    print(users_collection)
+
     query = request.args.get('q')
     limit = request.args.get('limit', 10)
     offset = request.args.get('offset', 0)

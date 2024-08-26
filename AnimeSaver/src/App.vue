@@ -64,4 +64,8 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+* {
+  font-family: Helvetica, sans-serif;
+}
 </style>

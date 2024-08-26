@@ -10,7 +10,12 @@
                 <img :src="anime.main_picture?.large" alt="Anime image" class="anime-image" />
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
-                    <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
+                    <div class="rating-container">
+                        <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
+                        <button @click="handleAddAnime(anime.id)" class="log-button">
+                            {{ userAnimeList.includes(anime.id) ? 'Remove from List' : 'Add to List' }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -23,18 +28,24 @@
 </template>
 
 <script>
+import auth from '@/utils/auth'; // Adjust the path as needed
+
 export default {
     data() {
         return {
             query: '',
             animeList: [],
             currentPage: 1,
-            limit: 14
+            limit: 14,
+            userAnimeList: []
         };
+    },
+    async created() {
+        await this.loadUserAnimeList();
     },
     methods: {
         async searchAnime() {
-            this.currentPage = 1; // Reset to page 1 on new search
+            this.currentPage = 1;
             await this.fetchAnimeData();
         },
         async fetchAnimeData() {
@@ -53,6 +64,32 @@ export default {
                 this.animeList = [];
             }
         },
+        async loadUserAnimeList() {
+            try {
+                this.userAnimeList = await auth.getUserAnimeList();
+            } catch (error) {
+                console.error('Error fetching user anime list:', error);
+                this.userAnimeList = [];
+            }
+        },
+        async handleAddAnime(animeId) {
+            const loggedIn = await auth.isLoggedIn();
+            if (loggedIn) {
+                try {
+                    if (this.userAnimeList.includes(animeId)) {
+                        await auth.removeAnimeFromUserList(animeId);
+                        this.userAnimeList = this.userAnimeList.filter(id => id !== animeId);
+                    } else {
+                        await auth.addAnimeToUserList(animeId);
+                        this.userAnimeList.push(animeId);
+                    }
+                } catch (error) {
+                    console.error('Error updating user anime list:', error);
+                }
+            } else {
+                alert('Please log in to add or remove anime from your list.');
+            }
+        },
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
@@ -68,7 +105,6 @@ export default {
     }
 };
 </script>
-
 
 <style scoped>
 /* Styling for the container */
@@ -112,9 +148,7 @@ export default {
 /* Styling for the grid container */
 .anime-grid {
     display: grid;
-    /* grid-template-columns: 1fr 1fr 1fr 1fr; */
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-
     gap: 16px;
     margin-top: 20px;
 }
@@ -127,7 +161,6 @@ export default {
     background-color: #411d7a;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease;
-
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -168,18 +201,48 @@ img.anime-image {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     line-clamp: 2;
-    /* add this for standard compatibility */
-
 }
 
 /* Rating text styling */
 .anime-rating-text {
     font-size: 14px;
     font-weight: 600;
-
     color: #ffe600;
-
     margin: 0;
+}
+
+/* Container for rating and buttons */
+.rating-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Heart icon styling */
+.heart-icon {
+    font-size: 24px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.hearted {
+    color: red;
+}
+
+.log-button {
+    padding: 10px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #7a2cf8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.log-button:hover {
+    background-color: #e6be10;
 }
 
 /* Styling for pagination controls */
@@ -206,10 +269,6 @@ img.anime-image {
 .pagination-controls button:disabled {
     background-color: #d6d6d6;
     cursor: not-allowed;
-}
-
-.pagination-controls {
-    margin-top: 20px;
 }
 
 .page-number {

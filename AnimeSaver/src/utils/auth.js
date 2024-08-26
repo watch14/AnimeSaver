@@ -9,23 +9,16 @@ const auth = {
    * @returns {Promise<boolean>} - Returns a promise that resolves to true if the user is logged in, false otherwise.
    */
   async isLoggedIn() {
-    // Get the userId from localStorage
     const userId = localStorage.getItem("userId");
 
-    // If there's no userId in localStorage, the user is not logged in
     if (!userId) {
       return false;
     }
 
     try {
-      // Make a GET request to check if the user exists in the database
       const response = await axios.get(`/user/${userId}`);
-
-      // If the request is successful and the user exists, return true
-      console.log("Login status:", response.data._id);
       return response.status === 200 && response.data._id === userId;
     } catch (error) {
-      // If there was an error, log it and return false (user is not logged in)
       console.error("Error checking login status:", error);
       return false;
     }
@@ -36,6 +29,127 @@ const auth = {
    */
   logout() {
     localStorage.removeItem("userId");
+  },
+
+  /**
+   * Add an anime to the user's saved list.
+   * @param {string} animeId - The ID of the anime to add.
+   * @returns {Promise<void>} - Returns a promise that resolves when the anime is added or if the user is prompted to log in.
+   */
+  async addAnimeToUserList(animeId) {
+    const loggedIn = await this.isLoggedIn();
+
+    if (!loggedIn) {
+      alert("Please log in to add an anime to your list.");
+      return;
+    }
+
+    const userId = localStorage.getItem("userId");
+
+    try {
+      await axios.post(`/user/${userId}/add_anime`, {
+        anime_id: animeId,
+        watched: false,
+      });
+      console.log(`Anime with ID ${animeId} added to the user's list.`);
+    } catch (error) {
+      console.error("Error adding anime to the user's list:", error);
+    }
+  },
+
+  /**
+   * Remove an anime from the user's saved list.
+   * @param {string} animeId - The ID of the anime to remove.
+   * @returns {Promise<void>} - Returns a promise that resolves when the anime is removed or if the user is prompted to log in.
+   */
+  async removeAnimeFromUserList(animeId) {
+    const loggedIn = await this.isLoggedIn();
+
+    if (!loggedIn) {
+      alert("Please log in to remove an anime from your list.");
+      return;
+    }
+
+    const userId = localStorage.getItem("userId");
+
+    try {
+      await axios.delete(`/user/${userId}/remove_anime`, {
+        data: {
+          anime_id: animeId,
+        },
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(`Anime with ID ${animeId} removed from the user's list.`);
+    } catch (error) {
+      console.error("Error removing anime from the user's list:", error);
+    }
+  },
+
+  /**
+   * Fetch and print the user's data by their ID.
+   * @param {string} id - The ID of the user to fetch.
+   * @returns {Promise<void>} - Returns a promise that resolves when the user data is fetched and printed.
+   */
+  async getUserById(id) {
+    if (!id) {
+      console.error("No user ID provided.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(`/user/${id}`);
+
+      if (response.status === 200) {
+        console.log("User data:", response.data);
+      } else {
+        console.log("Failed to fetch user data. Status code:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  },
+  /**
+   * Fetch the list of anime IDs saved by the user.
+   * @returns {Promise<string[]>} - Returns a promise that resolves to an array of anime IDs.
+   */
+  async getUserAnimeList() {
+    // Check if the user is logged in
+    const loggedIn = await this.isLoggedIn();
+
+    if (!loggedIn) {
+      alert("Please log in to view your anime list.");
+      return [];
+    }
+
+    // Get the userId from localStorage
+    const userId = localStorage.getItem("userId");
+
+    try {
+      // Make a GET request to fetch the user's saved anime list
+      const response = await axios.get(`/user/${userId}`);
+      console.log("User anime list:", response.data);
+      return response.data.anime_list || [];
+    } catch (error) {
+      console.error("Error fetching user anime list:", error);
+      return [];
+    }
+  },
+  async loadUserAnimeList() {
+    try {
+      // Fetch user data from the auth service
+      const userData = await auth.getUserAnimeList();
+
+      // Extract the list of anime IDs
+      this.userAnimeList = userData.savedList.map((item) => item.id);
+
+      console.log("User anime list loaded:", this.userAnimeList);
+    } catch (error) {
+      console.error("Error fetching user anime list:", error);
+      this.userAnimeList = [];
+    }
   },
 };
 
