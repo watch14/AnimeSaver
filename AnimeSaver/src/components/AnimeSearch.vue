@@ -29,7 +29,7 @@ export default {
             query: '',
             animeList: [],
             currentPage: 1,
-            limit: 12
+            limit: 14
         };
     },
     methods: {
@@ -112,7 +112,9 @@ export default {
 /* Styling for the grid container */
 .anime-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* grid-template-columns: 1fr 1fr 1fr 1fr; */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
     gap: 16px;
     margin-top: 20px;
 }
@@ -138,7 +140,7 @@ export default {
 
 /* Styling for the image */
 img.anime-image {
-    height: 320px;
+    max-height: 600px;
     width: 100%;
     display: block;
     object-fit: cover;
