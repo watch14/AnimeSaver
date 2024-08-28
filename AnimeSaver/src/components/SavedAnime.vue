@@ -17,6 +17,12 @@
             </select>
         </div>
 
+        <!-- Shareable Link Button -->
+        <button @click="generateShareableLink" class="share-button">Generate Shareable Link</button>
+        <div v-if="shareableLink" class="share-link">
+            <p>Shareable Link: <a :href="shareableLink" target="_blank">{{ shareableLink }}</a></p>
+        </div>
+
         <div v-if="filteredAnimeList.length > 0" class="anime-grid">
             <div v-for="anime in filteredAnimeList" :key="anime.id" class="anime-card">
                 <button @click="handleRemoveAnime(anime.id)" class="remove-button">X</button>
@@ -59,10 +65,13 @@ export default {
             limit: 14,
             totalPages: 1,
             filter: 'all', // Default filter
-            ratingFilter: '' // Default rating filter
+            ratingFilter: '', // Default rating filter
+            shareableLink: '', // Store the generated link
+            userId: null // Initialize userId
         };
     },
     async created() {
+        this.userId = localStorage.getItem("userId"); // Set userId on component creation
         await this.fetchAnimeData();
     },
     watch: {
@@ -184,6 +193,34 @@ export default {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
                 this.updatePagination();
+            }
+        },
+        async generateShareableLink() {
+            const loggedIn = await auth.isLoggedIn();
+            if (loggedIn && this.userId) {
+                try {
+                    const response = await fetch('http://localhost:5000/api/share-list', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: this.userId,
+                            animeList: this.animeList
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        this.shareableLink = data.link;
+                    } else {
+                        console.error('Error generating shareable link:', data);
+                    }
+                } catch (error) {
+                    console.error('Error generating shareable link:', error);
+                }
+            } else {
+                alert('Please log in to generate a shareable link.');
             }
         }
     }

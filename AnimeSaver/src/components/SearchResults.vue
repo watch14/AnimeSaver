@@ -14,7 +14,7 @@
                     <div class="rating-container">
                         <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
                         <button @click="handleAddAnime(anime.id)" class="log-button">
-                            {{ isAnimeInUserList(anime.id) ? 'Remove from List' : 'Add to List' }}
+                            {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
                         </button>
                     </div>
                 </div>
@@ -261,7 +261,7 @@ img.anime-image {
 }
 
 .log-button:hover {
-    background-color: #e6be10;
+    background-color: #6b23e0;
 }
 
 /* Styling for pagination controls */
