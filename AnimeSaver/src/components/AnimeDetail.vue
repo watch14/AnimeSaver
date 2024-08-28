@@ -53,10 +53,9 @@ export default {
         };
     },
     async created() {
-        this.numericId = Number(this.id); // Convert string ID to numeric ID
+        this.numericId = Number(this.id);
         await this.fetchAnimeDetail();
-        await this.checkIfAnimeInUserList();
-        await this.checkIfAnimeWatched();
+        await Promise.all([this.checkIfAnimeInUserList(), this.checkIfAnimeWatched()]);
         this.loading = false;
     },
     methods: {
@@ -166,7 +165,8 @@ export default {
 .anime-image {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
+    min-width: 300px;
+    height: auto;
 }
 
 .buttonss {

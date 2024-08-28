@@ -2,16 +2,16 @@
   <div id="app">
     <Header :loggedIn="isAuthenticated" :username="username" @logout="handleLogout" />
     <div class="container">
-      <router-view @login="handleLogin" />
+      <router-view />
     </div>
-    <Footer /> <!-- Add the Footer component here -->
+    <Footer />
   </div>
 </template>
 
 <script>
 import Header from './components/Header.vue';
-import Footer from './components/Footer.vue'; // Import Footer component
-import auth from '@/utils/auth'; // Import the auth module
+import Footer from './components/Footer.vue';
+import auth from '@/utils/auth';
 
 export default {
   name: 'App',
@@ -29,27 +29,46 @@ export default {
     async handleLogin() {
       this.isAuthenticated = await auth.isLoggedIn();
       if (this.isAuthenticated) {
-        const userData = await auth.getUserById(localStorage.getItem('userId'));
-        this.username = userData.userName; // Assume userData contains a userName field
+        const userId = localStorage.getItem('userId');
+        if (userId) {
+          const userData = await auth.getUserById(userId);
+          if (userData) {
+            this.username = userData.userName;
+          } else {
+            console.error('User data not found.');
+            this.username = 'Guest';
+          }
+        } else {
+          console.error('No userId found in localStorage.');
+        }
       }
     },
     async handleLogout() {
       await auth.logout();
       this.isAuthenticated = false;
       this.username = '';
-      this.$router.push('/login'); // Redirect to login page or homepage
+      this.$router.push('/login');
     }
   },
   async created() {
     this.isAuthenticated = await auth.isLoggedIn();
     if (this.isAuthenticated) {
-      const userData = await auth.getUserById(localStorage.getItem('userId'));
-      this.username = userData.userName; // Assume userData contains a userName field
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        const userData = await auth.getUserById(userId);
+        if (userData) {
+          this.username = userData.userName;
+        } else {
+          console.error('User data not found.');
+          this.username = 'Guest';
+        }
+      } else {
+        console.error('No userId found in localStorage.');
+      }
     }
   }
 };
 </script>
-
 
 <style>
 /* Full-page container for centering */
@@ -58,7 +77,6 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  /* Push the footer to the bottom */
   min-height: 100vh;
   margin: 0;
   background-color: #131212;
@@ -68,7 +86,6 @@ export default {
 .container {
   width: 100%;
   margin-inline: auto;
-  /* Optional: Add padding to the container */
 }
 
 /* Main heading style */
