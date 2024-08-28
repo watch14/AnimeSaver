@@ -183,6 +183,20 @@ const auth = {
       alert("Error updating watched status. Please try again.");
     }
   },
+  async getUserById(id) {
+    if (!id) {
+      console.error("No user ID provided.");
+      return {};
+    }
+
+    try {
+      const response = await axios.get(`/user/${id}`);
+      return response.data; // Ensure this contains the username field
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      return {};
+    }
+  },
 };
 
 export default auth;

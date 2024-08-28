@@ -1,13 +1,13 @@
 <template>
     <header class="header">
         <div class="logo">
-
             <router-link to="/">
                 <h1>AnimeSaver</h1>
             </router-link>
         </div>
         <nav>
             <!-- Conditional rendering based on login status -->
+            <span v-if="loggedIn" class="username">Hello, {{ username }}</span>
             <router-link v-if="loggedIn" to="/saved-anime">Saved Anime</router-link>
             <router-link v-if="!loggedIn" to="/login">Login</router-link>
             <router-link v-if="!loggedIn" to="/register">Register</router-link>
@@ -21,21 +21,20 @@ import auth from '../utils/auth.js'; // Adjust the import path based on your fil
 
 export default {
     name: 'Header',
-
-    data() {
-        return {
-            loggedIn: false
-        };
-    },
-    async created() {
-        // Check if the user is logged in when the component is created
-        this.loggedIn = await auth.isLoggedIn();
+    props: {
+        loggedIn: {
+            type: Boolean,
+            required: true
+        },
+        username: {
+            type: String,
+            default: ''
+        }
     },
     methods: {
         async handleLogout() {
             await auth.logout();
-            this.loggedIn = false;
-            // Optionally, redirect to home or login page
+            this.$emit('logout');
             this.$router.push('/'); // Redirect to home page
         }
     }
@@ -77,5 +76,10 @@ button {
 
 button:hover {
     text-decoration: underline;
+}
+
+.username {
+    color: rgb(192, 192, 192);
+    margin: 0 10px;
 }
 </style>

@@ -65,7 +65,7 @@ export default {
             animeList: [],
             filteredAnimeList: [],
             currentPage: 1,
-            limit: 14,
+            limit: 18,
             totalPages: 1,
             filter: 'all', // Default filter
             ratingFilter: '', // Default rating filter
@@ -242,7 +242,7 @@ export default {
 <style scoped>
 .saved-anime-container {
     text-align: center;
-    padding: 20px;
+    padding: 40px;
 }
 
 .filter-controls select {

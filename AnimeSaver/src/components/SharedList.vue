@@ -3,7 +3,7 @@
         <h1>Shared List</h1>
 
         <!-- Loader -->
-        <div v-if="loading" class="loader">Loading...</div>
+        <div v-if="loading" class="loader"></div>
 
         <!-- Anime List -->
         <div v-if="!loading && animeList.length > 0" class="anime-grid">

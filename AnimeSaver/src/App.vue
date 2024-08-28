@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <Header />
+    <Header :loggedIn="isAuthenticated" :username="username" @logout="handleLogout" />
     <div class="container">
-      <router-view />
+      <router-view @login="handleLogin" />
     </div>
     <Footer /> <!-- Add the Footer component here -->
   </div>
@@ -11,15 +11,45 @@
 <script>
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue'; // Import Footer component
+import auth from '@/utils/auth'; // Import the auth module
 
 export default {
   name: 'App',
   components: {
     Header,
     Footer
+  },
+  data() {
+    return {
+      isAuthenticated: false,
+      username: ''
+    };
+  },
+  methods: {
+    async handleLogin() {
+      this.isAuthenticated = await auth.isLoggedIn();
+      if (this.isAuthenticated) {
+        const userData = await auth.getUserById(localStorage.getItem('userId'));
+        this.username = userData.userName; // Assume userData contains a userName field
+      }
+    },
+    async handleLogout() {
+      await auth.logout();
+      this.isAuthenticated = false;
+      this.username = '';
+      this.$router.push('/login'); // Redirect to login page or homepage
+    }
+  },
+  async created() {
+    this.isAuthenticated = await auth.isLoggedIn();
+    if (this.isAuthenticated) {
+      const userData = await auth.getUserById(localStorage.getItem('userId'));
+      this.username = userData.userName; // Assume userData contains a userName field
+    }
   }
 };
 </script>
+
 
 <style>
 /* Full-page container for centering */
@@ -38,7 +68,6 @@ export default {
 .container {
   width: 100%;
   margin-inline: auto;
-  padding: 20px;
   /* Optional: Add padding to the container */
 }
 
