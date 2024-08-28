@@ -106,7 +106,7 @@ We welcome contributions to improve the app! If you'd like to contribute, please
 
 For any questions or issues, please contact:
 
-- **Email:** Chebbimaamoun@example.com
+- **Email:** chebbimaamoun@gmail.com
 - **GitHub:** [watch14](https://github.com/watch14)
 
 ---
