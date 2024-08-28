@@ -5,7 +5,12 @@
             <input v-model="query" @keyup.enter="searchAnime" placeholder="Search for anime..." class="search-input" />
             <button @click="searchAnime" class="search-button">Search</button>
         </div>
-        <div v-if="animeList.length > 0" class="anime-grid">
+
+        <!-- Loader -->
+        <div v-if="loading" class="loader"></div>
+
+        <!-- Anime List -->
+        <div v-if="animeList.length > 0 && !loading" class="anime-grid">
             <div v-for="anime in animeList" :key="anime.id" class="anime-card">
                 <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
                     class="anime-image" />
@@ -20,7 +25,9 @@
                 </div>
             </div>
         </div>
-        <div v-if="animeList.length > 0" class="pagination-controls">
+
+        <!-- Pagination Controls -->
+        <div v-if="!loading && animeList.length > 0" class="pagination-controls">
             <button @click="prevPage" :disabled="currentPage <= 1">Previous</button>
             <span class="page-number">Page {{ currentPage }}</span>
             <button @click="nextPage" :disabled="animeList.length < limit">Next</button>
@@ -38,7 +45,8 @@ export default {
             animeList: [],
             currentPage: 1,
             limit: 14,
-            userAnimeList: [] // This will hold the IDs of the anime saved by the user
+            userAnimeList: [], // This will hold the IDs of the anime saved by the user
+            loading: false // Loading state
         };
     },
     async created() {
@@ -56,6 +64,7 @@ export default {
         async fetchAnimeData() {
             this.query = this.$route.query.q || ''; // Update the query from the route
             const offset = (this.currentPage - 1) * this.limit;
+            this.loading = true; // Show loader
             try {
                 const response = await fetch(`http://localhost:5000/api/anime/search?q=${this.query}&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
                 const data = await response.json();
@@ -68,6 +77,8 @@ export default {
             } catch (error) {
                 console.error('Error fetching anime data:', error);
                 this.animeList = [];
+            } finally {
+                this.loading = false; // Hide loader
             }
         },
         async loadUserAnimeList() {
@@ -292,5 +303,31 @@ img.anime-image {
 
 .page-number {
     margin: 0 15px;
+}
+
+/* Loader Styles */
+.loader {
+    margin-top: 20px;
+    padding: 20px;
+    font-size: 1.5em;
+    color: #7a7681;
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #411d7a;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-inline: auto;
+
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>

@@ -4,10 +4,7 @@
 
         <!-- Filter Buttons -->
         <div class="filter-controls">
-
             <button @click="generateShareableLink" class="share-button">Share</button>
-
-
             <button @click="filter = 'all'" :class="{ active: filter === 'all' }">All</button>
             <button @click="filter = 'watched'" :class="{ active: filter === 'watched' }">Watched</button>
             <button @click="filter = 'unwatched'" :class="{ active: filter === 'unwatched' }">Unwatched</button>
@@ -21,15 +18,15 @@
             </select>
 
             <div v-if="shareableLink" class="share-link">
-                <p>Shareable Link: <a :href="shareableLink" target="_blank">{{ shareableLink }}</a></p>
+                <p>Share Your List: <a :href="shareableLink" target="_blank">{{ shareableLink }}</a></p>
             </div>
-
         </div>
 
-        <!-- Shareable Link Button -->
+        <!-- Loader -->
+        <div v-if="loading" class="loader"></div>
 
-
-        <div v-if="filteredAnimeList.length > 0" class="anime-grid">
+        <!-- Anime List -->
+        <div v-if="!loading && filteredAnimeList.length > 0" class="anime-grid">
             <div v-for="anime in filteredAnimeList" :key="anime.id" class="anime-card">
                 <button @click="handleRemoveAnime(anime.id)" class="remove-button">X</button>
                 <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
@@ -47,13 +44,13 @@
             </div>
         </div>
 
-        <div v-if="filteredAnimeList.length > 0" class="pagination-controls">
+        <div v-if="!loading && filteredAnimeList.length > 0" class="pagination-controls">
             <button @click="prevPage" :disabled="currentPage <= 1">Previous</button>
             <span class="page-number">Page {{ currentPage }} of {{ totalPages }}</span>
             <button @click="nextPage" :disabled="currentPage >= totalPages">Next</button>
         </div>
 
-        <div v-else>
+        <div v-if="!loading && filteredAnimeList.length === 0">
             <p>No saved anime found.</p>
         </div>
     </div>
@@ -73,7 +70,8 @@ export default {
             filter: 'all', // Default filter
             ratingFilter: '', // Default rating filter
             shareableLink: '', // Store the generated link
-            userId: null // Initialize userId
+            userId: null, // Initialize userId
+            loading: false // Loading state
         };
     },
     async created() {
@@ -93,6 +91,7 @@ export default {
     },
     methods: {
         async fetchAnimeData() {
+            this.loading = true; // Show loader
             const offset = (this.currentPage - 1) * this.limit;
             try {
                 const userAnimeObjects = await auth.getUserAnimeList();
@@ -129,6 +128,8 @@ export default {
                 this.animeList = [];
                 this.filteredAnimeList = [];
                 this.totalPages = 1;
+            } finally {
+                this.loading = false; // Hide loader
             }
         },
         applyFilter() {
@@ -238,8 +239,6 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
 .saved-anime-container {
     text-align: center;
@@ -307,7 +306,6 @@ export default {
     max-width: 300px;
     margin: 0 auto;
     position: relative;
-    /* Added for absolute positioning of the X button */
 }
 
 /* .anime-card:hover {
@@ -440,5 +438,30 @@ img.anime-image {
 
 .page-number {
     margin: 0 15px;
+}
+
+/* Loader Styles */
+.loader {
+    margin: 20px;
+    padding: 20px;
+    font-size: 1.5em;
+    color: #7a7681;
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #411d7a;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-inline: auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>

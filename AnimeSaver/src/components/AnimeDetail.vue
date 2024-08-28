@@ -1,5 +1,9 @@
 <template>
-    <div class="anime-detail-container">
+
+    <!-- Loader -->
+    <div v-if="loading" class="loader"></div>
+
+    <div v-if="!loading" class="anime-detail-container">
         <div class="anime-image-left">
             <img :src="anime.main_picture?.large" alt="Anime image" class="anime-image" />
             <!-- Only show Add/Remove button if anime is in the user's list -->
@@ -47,13 +51,15 @@ export default {
         return {
             anime: {},
             isAnimeInUserList: false, // Track if the anime is in the user's list
-            isAnimeWatched: false // Track if the anime is watched
+            isAnimeWatched: false, // Track if the anime is watched
+            loading: true // Loading state
         };
     },
     async created() {
         await this.fetchAnimeDetail();
         await this.checkIfAnimeInUserList();
         await this.checkIfAnimeWatched();
+        this.loading = false; // Data has been fetched, hide the loader
     },
     methods: {
         async fetchAnimeDetail() {
@@ -149,8 +155,6 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
 .anime-detail-container {
     display: flex;
@@ -209,7 +213,6 @@ export default {
 
 .watched-button.watched {
     background-color: #4caf50;
-    /* Green color for watched */
 }
 
 .watched-button.watched:hover {
@@ -218,7 +221,6 @@ export default {
 
 .watched-button.unwatched {
     background-color: #f56c6c;
-    /* Red color for unwatched */
 }
 
 .watched-button.unwatched:hover {
@@ -252,6 +254,37 @@ export default {
     line-height: 1.5;
     font-weight: 500;
     margin: 0;
+    width: 100%;
+}
+
+/* Loader Styles */
+.loader {
+    margin: 20px;
+    padding: 20px;
+    font-size: 1.5em;
+    color: #7a7681;
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #411d7a;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-inline: auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.anime-details-content {
+    display: flex;
+    flex-direction: row;
     width: 100%;
 }
 </style>

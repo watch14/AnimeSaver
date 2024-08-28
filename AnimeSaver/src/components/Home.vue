@@ -5,20 +5,37 @@
             <input v-model="query" @keyup.enter="searchAnime" placeholder="Search for anime..." class="search-input" />
             <button @click="searchAnime" class="search-button">Search</button>
         </div>
+
+        <!-- Loader -->
+        <div v-if="loading" class="loader">Searching...</div>
+
+        <!-- Display results (optional) -->
+        <!-- Add logic here to display search results if needed -->
     </div>
 </template>
 
 <script>
+import { ref } from 'vue';
+
 export default {
     data() {
         return {
-            query: ''
+            query: '',
+            loading: ref(false) // Loading state
         };
     },
     methods: {
-        searchAnime() {
+        async searchAnime() {
             if (this.query.trim()) {
-                this.$router.push({ name: 'SearchResults', query: { q: this.query } });
+                this.loading = true; // Show loader
+                try {
+                    // Perform the search and navigate
+                    this.$router.push({ name: 'SearchResults', query: { q: this.query } });
+                } catch (error) {
+                    console.error('Search error:', error);
+                } finally {
+                    this.loading = false; // Hide loader
+                }
             }
         }
     }
@@ -62,5 +79,31 @@ export default {
 
 .search-button:hover {
     background-color: #411d7a;
+}
+
+/* Loader Styles */
+.loader {
+    margin-top: 20px;
+    padding: 20px;
+    font-size: 1.5em;
+    color: #7a7681;
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #411d7a;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-inline: auto;
+
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>

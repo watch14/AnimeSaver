@@ -1,7 +1,12 @@
 <template>
     <div class="anime-grid-container">
         <h1>Shared List</h1>
-        <div v-if="animeList && animeList.length > 0" class="anime-grid">
+
+        <!-- Loader -->
+        <div v-if="loading" class="loader">Loading...</div>
+
+        <!-- Anime List -->
+        <div v-if="!loading && animeList.length > 0" class="anime-grid">
             <div v-for="anime in animeList" :key="anime.id" class="anime-card">
                 <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
                     class="anime-image" />
@@ -13,11 +18,12 @@
                 </div>
             </div>
         </div>
-        <div v-else>
-            <p>Loading...</p>
+        <div v-else-if="!loading">
+            <p>No anime found in the shared list.</p>
         </div>
     </div>
 </template>
+
 <script>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -27,6 +33,7 @@ export default {
     props: ['link_id'],
     setup(props) {
         const animeList = ref([]);
+        const loading = ref(true); // Loading state
         const router = useRouter();
 
         onMounted(async () => {
@@ -36,6 +43,8 @@ export default {
             } catch (error) {
                 console.error('Error fetching shared list:', error);
                 animeList.value = [];
+            } finally {
+                loading.value = false; // Hide loader
             }
         });
 
@@ -44,7 +53,7 @@ export default {
             console.log('Go to anime page with ID:', animeId.toString());
         };
 
-        return { animeList, goToAnimePage };
+        return { animeList, loading, goToAnimePage };
     }
 };
 </script>
@@ -53,6 +62,30 @@ export default {
 .anime-grid-container {
     text-align: center;
     padding: 20px;
+}
+
+/* Loader Styles */
+.loader {
+    margin: 20px;
+    padding: 20px;
+    font-size: 1.5em;
+    color: #7a7681;
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #411d7a;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .anime-grid {
