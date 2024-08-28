@@ -4,16 +4,19 @@
     <div class="container">
       <router-view />
     </div>
+    <Footer /> <!-- Add the Footer component here -->
   </div>
 </template>
 
 <script>
-import Header from './components/Header.vue'; // Import Header component
+import Header from './components/Header.vue';
+import Footer from './components/Footer.vue'; // Import Footer component
 
 export default {
   name: 'App',
   components: {
-    Header
+    Header,
+    Footer
   }
 };
 </script>
@@ -24,18 +27,18 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  /* Push the footer to the bottom */
   min-height: 100vh;
   margin: 0;
-  margin-inline: auto;
-
   background-color: #131212;
 }
 
 /* Centered container styling */
 .container {
-  width: 100vw;
+  width: 100%;
   margin-inline: auto;
+  padding: 20px 0;
+  /* Optional: Add padding to the container */
 }
 
 /* Main heading style */
