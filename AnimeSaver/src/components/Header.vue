@@ -21,6 +21,7 @@ import auth from '../utils/auth.js'; // Adjust the import path based on your fil
 
 export default {
     name: 'Header',
+
     data() {
         return {
             loggedIn: false

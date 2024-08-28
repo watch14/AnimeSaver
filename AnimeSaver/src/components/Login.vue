@@ -83,7 +83,7 @@ form {
 .login-container {
     max-width: 400px;
     width: 100%;
-    margin: 0 auto;
+    margin: auto;
     padding: 20px;
     background-color: #f7f7f7;
     border-radius: 8px;
@@ -96,19 +96,21 @@ h1 {
 }
 
 input {
-    width: 100%;
-    padding: 10px 0;
+    padding: 10px 10px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 16px;
 }
 
 button {
     width: 100%;
     padding: 10px;
+    font-size: 16px;
+
     background-color: #5b22b6;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
