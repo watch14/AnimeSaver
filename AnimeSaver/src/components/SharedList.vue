@@ -1,9 +1,10 @@
 <template>
     <div class="anime-grid-container">
-        <h1>Shared List</h1>
 
         <!-- Loader -->
         <div v-if="loading" class="loader"></div>
+
+        <h1 v-if="!loading"> {{ username }}'s Saved List</h1>
 
         <!-- Anime List -->
         <div v-if="!loading && animeList.length > 0" class="anime-grid">
@@ -24,7 +25,10 @@
     </div>
 </template>
 
+
+
 <script>
+
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -34,15 +38,27 @@ export default {
     setup(props) {
         const animeList = ref([]);
         const loading = ref(true); // Loading state
+        const username = ref(''); // Username state
         const router = useRouter();
 
         onMounted(async () => {
             try {
+                // Fetch shared list
                 const response = await axios.get(`http://localhost:5000/api/shared-list/${props.link_id}`);
                 animeList.value = response.data.animeList || [];
+
+                // Fetch user details using userId from the shared list data
+                const userId = response.data.userId;
+                if (userId) {
+                    const userResponse = await axios.get(`http://localhost:5000/user/${userId}`);
+                    username.value = userResponse.data.userName || 'Unknown';
+                } else {
+                    username.value = 'Unknown';
+                }
             } catch (error) {
-                console.error('Error fetching shared list:', error);
+                console.error('Error fetching shared list or user data:', error);
                 animeList.value = [];
+                username.value = 'Unknown'; // Default username if error occurs
             } finally {
                 loading.value = false; // Hide loader
             }
@@ -53,10 +69,11 @@ export default {
             console.log('Go to anime page with ID:', animeId.toString());
         };
 
-        return { animeList, loading, goToAnimePage };
+        return { animeList, loading, username, goToAnimePage };
     }
 };
 </script>
+
 
 <style scoped>
 .anime-grid-container {
@@ -76,7 +93,9 @@ export default {
     width: 60px;
     height: 60px;
     animation: spin 1s linear infinite;
+    margin-inline: auto;
 }
+
 
 @keyframes spin {
     0% {
