@@ -4,6 +4,10 @@
 
         <!-- Filter Buttons -->
         <div class="filter-controls">
+
+            <button @click="generateShareableLink" class="share-button">Share</button>
+
+
             <button @click="filter = 'all'" :class="{ active: filter === 'all' }">All</button>
             <button @click="filter = 'watched'" :class="{ active: filter === 'watched' }">Watched</button>
             <button @click="filter = 'unwatched'" :class="{ active: filter === 'unwatched' }">Unwatched</button>
@@ -15,13 +19,15 @@
                     {{ rating }} +
                 </option>
             </select>
+
+            <div v-if="shareableLink" class="share-link">
+                <p>Shareable Link: <a :href="shareableLink" target="_blank">{{ shareableLink }}</a></p>
+            </div>
+
         </div>
 
         <!-- Shareable Link Button -->
-        <button @click="generateShareableLink" class="share-button">Generate Shareable Link</button>
-        <div v-if="shareableLink" class="share-link">
-            <p>Shareable Link: <a :href="shareableLink" target="_blank">{{ shareableLink }}</a></p>
-        </div>
+
 
         <div v-if="filteredAnimeList.length > 0" class="anime-grid">
             <div v-for="anime in filteredAnimeList" :key="anime.id" class="anime-card">
@@ -208,6 +214,16 @@ export default {
                     const data = await response.json();
                     if (response.ok) {
                         this.shareableLink = data.link;
+
+                        // Copy to clipboard
+                        navigator.clipboard.writeText(this.shareableLink)
+                            .then(() => {
+                                console.log('Link copied to clipboard!');
+                                alert('Link copied to clipboard!');
+                            })
+                            .catch(err => {
+                                console.error('Failed to copy link: ', err);
+                            });
                     } else {
                         console.error('Error generating shareable link:', data);
                     }
@@ -221,6 +237,7 @@ export default {
     }
 };
 </script>
+
 
 
 <style scoped>
