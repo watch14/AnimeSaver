@@ -24,7 +24,6 @@
                     class="anime-image" />
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
-                    <p class="anime-status-text">{{ anime.watched ? 'Watched' : 'Not Watched' }}</p>
                     <div class="rating-container">
                         <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
                         <button @click="toggleWatchedStatus(anime.id, anime.watched)"
@@ -290,7 +289,7 @@ export default {
 }
 
 img.anime-image {
-    max-height: 300px;
+    max-height: 600px;
     width: 100%;
     display: block;
     object-fit: cover;
