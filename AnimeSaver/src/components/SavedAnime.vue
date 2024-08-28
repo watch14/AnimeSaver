@@ -10,9 +10,9 @@
 
             <!-- Rating Filter -->
             <select v-model="ratingFilter" @change="applyFilter">
-                <option value="">Select Rating</option>
+                <option value="">Score</option>
                 <option v-for="rating in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" :key="rating" :value="rating">
-                    {{ rating }} and above
+                    {{ rating }} +
                 </option>
             </select>
         </div>
