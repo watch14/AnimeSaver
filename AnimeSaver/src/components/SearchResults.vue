@@ -181,9 +181,9 @@ export default {
     height: 100%;
 }
 
-.anime-card:hover {
+/* .anime-card:hover {
     transform: scale(1.02);
-}
+} */
 
 /* Styling for the image */
 img.anime-image {
@@ -215,6 +215,11 @@ img.anime-image {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+    cursor: pointer;
+}
+
+.anime-title:hover {
+    text-decoration: underline;
 }
 
 /* Rating text styling */

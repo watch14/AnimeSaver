@@ -23,7 +23,7 @@
                 <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
                     class="anime-image" />
                 <div class="anime-details">
-                    <h2 class="anime-title">{{ anime.title }}</h2>
+                    <h2 class="anime-title" @click="goToAnimePage(anime.id)">{{ anime.title }}</h2>
                     <div class="rating-container">
                         <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
                         <button @click="toggleWatchedStatus(anime.id, anime.watched)"
@@ -261,15 +261,15 @@ export default {
     /* Added for absolute positioning of the X button */
 }
 
-.anime-card:hover {
+/* .anime-card:hover {
     transform: scale(1.02);
-}
+} */
 
 .remove-button {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #f02121;
+    top: 4px;
+    right: 4px;
+    background-color: #d84444;
     color: white;
     border: none;
     border-radius: 50%;
@@ -285,7 +285,7 @@ export default {
 }
 
 .remove-button:hover {
-    background-color: #d43f3a;
+    background-color: #eb2d26;
 }
 
 img.anime-image {
@@ -316,6 +316,11 @@ img.anime-image {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+    cursor: pointer;
+}
+
+.anime-title:hover {
+    text-decoration: underline;
 }
 
 .anime-rating-text {
