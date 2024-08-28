@@ -1,29 +1,27 @@
 <template>
-
     <!-- Loader -->
     <div v-if="loading" class="loader"></div>
 
     <div v-if="!loading" class="anime-detail-container">
         <div class="anime-image-left">
             <img :src="anime.main_picture?.large" alt="Anime image" class="anime-image" />
-            <!-- Only show Add/Remove button if anime is in the user's list -->
+
             <div class="buttonss">
-                <button v-if="isAnimeInUserList" @click="handleAddRemoveAnime" class="log-button">
-                    Remove from List
+                <!-- Add/Remove Button -->
+                <button @click="handleAddRemoveAnime" class="log-button">
+                    {{ isAnimeInUserList ? 'Remove' : 'Save' }}
                 </button>
-                <button v-else @click="handleAddRemoveAnime" class="log-button">
-                    Add to List
-                </button>
-                <!-- Only show Watched/Unwatched button if anime is in the user's list -->
+
+                <!-- Watched/Unwatched Button -->
                 <button v-if="isAnimeInUserList" @click="handleWatchedStatus"
                     :class="['watched-button', { 'watched': isAnimeWatched, 'unwatched': !isAnimeWatched }]">
                     {{ isAnimeWatched ? 'Watched' : 'Unwatched' }}
                 </button>
             </div>
         </div>
+
         <div class="anime-info-right">
             <h1 class="anime-title">{{ anime.title }} {{ isAnimeWatched ? '(Watched)' : '(Unwatched)' }}</h1>
-
             <p class="anime-detail-text"><strong>Rating:</strong> {{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10
             </p>
             <p class="anime-detail-text"><strong>Episodes:</strong> {{ anime.num_episodes }}</p>
@@ -35,7 +33,6 @@
         </div>
     </div>
 </template>
-
 
 <script>
 import auth from '@/utils/auth'; // Adjust the path as needed
@@ -50,25 +47,22 @@ export default {
     data() {
         return {
             anime: {},
-            isAnimeInUserList: false, // Track if the anime is in the user's list
-            isAnimeWatched: false, // Track if the anime is watched
-            loading: true // Loading state
+            isAnimeInUserList: false,
+            isAnimeWatched: false,
+            loading: true
         };
     },
     async created() {
+        this.numericId = Number(this.id); // Convert string ID to numeric ID
         await this.fetchAnimeDetail();
         await this.checkIfAnimeInUserList();
         await this.checkIfAnimeWatched();
-        this.loading = false; // Data has been fetched, hide the loader
+        this.loading = false;
     },
     methods: {
         async fetchAnimeDetail() {
-            if (!this.id) {
-                console.error("No anime ID provided.");
-                return;
-            }
             try {
-                const response = await fetch(`http://localhost:5000/api/anime/${this.id}?fields=title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
+                const response = await fetch(`http://localhost:5000/api/anime/${this.numericId}?fields=title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
                 const data = await response.json();
                 this.anime = data;
             } catch (error) {
@@ -78,8 +72,8 @@ export default {
         async checkIfAnimeInUserList() {
             try {
                 const userAnimeObjects = await auth.getUserAnimeList();
-                const userAnimeList = userAnimeObjects.map(anime => anime.id.toString());
-                this.isAnimeInUserList = userAnimeList.includes(this.id.toString());
+                const userAnimeList = userAnimeObjects.map(anime => anime.id);
+                this.isAnimeInUserList = userAnimeList.includes(this.numericId); // Compare as numbers
             } catch (error) {
                 console.error('Error fetching user anime list:', error);
                 this.isAnimeInUserList = false;
@@ -89,48 +83,49 @@ export default {
             if (this.isAnimeInUserList) {
                 try {
                     const userAnimeObjects = await auth.getUserAnimeList();
-                    const animeObject = userAnimeObjects.find(anime => anime.id.toString() === this.id.toString());
+                    const animeObject = userAnimeObjects.find(anime => anime.id === this.numericId); // Compare as numbers
                     this.isAnimeWatched = animeObject ? animeObject.watched : false;
                 } catch (error) {
-                    console.error('Error fetching user anime list:', error);
+                    console.error('Error fetching watched status:', error);
                     this.isAnimeWatched = false;
                 }
             }
         },
         async handleAddRemoveAnime() {
             const loggedIn = await auth.isLoggedIn();
-            if (loggedIn) {
-                try {
-                    if (this.isAnimeInUserList) {
-                        await auth.removeAnimeFromUserList(this.id);
-                    } else {
-                        await auth.addAnimeToUserList(this.id);
-                    }
-                    await this.checkIfAnimeInUserList(); // Refresh list status
-                    if (this.isAnimeInUserList) {
-                        await this.checkIfAnimeWatched(); // Refresh watched status if it's in the list
-                    }
-                } catch (error) {
-                    console.error('Error updating user anime list:', error);
-                    alert('Error updating anime list. Please try again.');
-                }
-            } else {
+            if (!loggedIn) {
                 alert('Please log in to add or remove anime from your list.');
+                return;
+            }
+
+            try {
+                if (this.isAnimeInUserList) {
+                    await auth.removeAnimeFromUserList(this.numericId);
+                    this.isAnimeInUserList = false;
+                    this.isAnimeWatched = false; // Reset watched status when removed
+                } else {
+                    await auth.addAnimeToUserList(this.numericId);
+                    this.isAnimeInUserList = true;
+                }
+            } catch (error) {
+                console.error('Error updating user anime list:', error);
+                alert('Error updating anime list. Please try again.');
             }
         },
         async handleWatchedStatus() {
             const loggedIn = await auth.isLoggedIn();
-            if (loggedIn) {
-                try {
-                    const newStatus = !this.isAnimeWatched; // Toggle watched status
-                    await auth.updateAnimeWatchedStatus(this.id, newStatus);
-                    this.isAnimeWatched = newStatus; // Update the state
-                } catch (error) {
-                    console.error('Error updating watched status:', error);
-                    alert('Error updating watched status. Please try again.');
-                }
-            } else {
+            if (!loggedIn) {
                 alert('Please log in to mark anime as watched or unwatched.');
+                return;
+            }
+
+            try {
+                const newStatus = !this.isAnimeWatched;
+                await auth.updateAnimeWatchedStatus(this.numericId, newStatus);
+                this.isAnimeWatched = newStatus;
+            } catch (error) {
+                console.error('Error updating watched status:', error);
+                alert('Error updating watched status. Please try again.');
             }
         },
         formatDates(start, end) {
