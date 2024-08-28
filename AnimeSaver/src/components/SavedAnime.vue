@@ -77,14 +77,12 @@ export default {
     watch: {
         filter() {
             this.applyFilter();
-            this.updatePagination();
         },
         ratingFilter() {
             this.applyFilter();
-            this.updatePagination();
         },
         currentPage() {
-            this.updatePagination();
+            this.fetchAnimeData(); // Fetch data based on updated page number
         }
     },
     methods: {
@@ -115,7 +113,6 @@ export default {
                     }));
 
                     this.applyFilter();
-                    this.updatePagination();
                 } else {
                     this.animeList = [];
                     this.filteredAnimeList = [];
@@ -142,10 +139,10 @@ export default {
             }
 
             this.filteredAnimeList = list;
+            this.totalPages = Math.ceil(this.filteredAnimeList.length / this.limit);
             this.updatePagination();
         },
         updatePagination() {
-            this.totalPages = Math.ceil(this.filteredAnimeList.length / this.limit);
             const offset = (this.currentPage - 1) * this.limit;
             this.filteredAnimeList = this.filteredAnimeList.slice(offset, offset + this.limit);
         },
@@ -186,13 +183,11 @@ export default {
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.updatePagination();
             }
         },
         nextPage() {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
-                this.updatePagination();
             }
         },
         async generateShareableLink() {

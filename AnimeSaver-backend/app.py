@@ -28,8 +28,7 @@ def create_app():
     app.register_blueprint(user_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(anime_bp, url_prefix='/api')
-    app.register_blueprint(share_bp)
-
+    app.register_blueprint(share_bp, url_prefix='/api')
     return app
 
 if __name__ == '__main__':
