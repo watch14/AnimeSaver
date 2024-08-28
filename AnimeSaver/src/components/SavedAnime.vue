@@ -158,7 +158,12 @@ export default {
             if (loggedIn) {
                 try {
                     await auth.removeAnimeFromUserList(animeId);
-                    await this.fetchAnimeData();
+
+                    // Update the local list by filtering out the removed anime
+                    this.animeList = this.animeList.filter(anime => anime.id !== animeId);
+
+                    // Reapply filter to update the displayed list
+                    this.applyFilter();
                 } catch (error) {
                     console.error('Error removing anime from user list:', error);
                 }

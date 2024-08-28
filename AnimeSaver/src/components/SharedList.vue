@@ -127,9 +127,9 @@ export default {
     height: 100%;
 }
 
-.anime-card:hover {
+/* .anime-card:hover {
     transform: scale(1.02);
-}
+} */
 
 .anime-image {
     max-height: 600px;
