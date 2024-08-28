@@ -8,6 +8,7 @@
         </div>
         <nav>
             <!-- Conditional rendering based on login status -->
+            <router-link v-if="loggedIn" to="/saved-anime">Saved Anime</router-link>
             <router-link v-if="!loggedIn" to="/login">Login</router-link>
             <router-link v-if="!loggedIn" to="/register">Register</router-link>
             <button v-if="loggedIn" @click="handleLogout">Logout</button>

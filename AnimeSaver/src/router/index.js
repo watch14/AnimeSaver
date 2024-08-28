@@ -5,6 +5,7 @@ import Register from "@/components/Register.vue";
 import AnimeDetail from "@/components/AnimeDetail.vue";
 import SearchResults from "@/components/SearchResults.vue";
 import Home from "../components/Home.vue";
+import SavedAnime from "@/components/SavedAnime.vue";
 
 const routes = [
   { path: "/", component: Home },
@@ -19,6 +20,12 @@ const routes = [
     path: "/anime/:id",
     name: "AnimeDetail",
     component: AnimeDetail,
+    props: true,
+  },
+  {
+    path: "/saved-anime",
+    name: "SavedAnime",
+    component: SavedAnime,
     props: true,
   },
 ];

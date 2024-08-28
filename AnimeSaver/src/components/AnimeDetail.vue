@@ -3,20 +3,23 @@
         <div class="anime-image-left">
             <img :src="anime.main_picture?.large" alt="Anime image" class="anime-image" />
             <!-- Only show Add/Remove button if anime is in the user's list -->
-            <button v-if="isAnimeInUserList" @click="handleAddRemoveAnime" class="log-button">
-                Remove from List
-            </button>
-            <button v-else @click="handleAddRemoveAnime" class="log-button">
-                Add to List
-            </button>
-            <!-- Only show Watched/Unwatched button if anime is in the user's list -->
-            <button v-if="isAnimeInUserList" @click="handleWatchedStatus"
-                :class="['watched-button', { 'watched': isAnimeWatched, 'unwatched': !isAnimeWatched }]">
-                {{ isAnimeWatched ? 'Mark as Unwatched' : 'Mark as Watched' }}
-            </button>
+            <div class="buttonss">
+                <button v-if="isAnimeInUserList" @click="handleAddRemoveAnime" class="log-button">
+                    Remove from List
+                </button>
+                <button v-else @click="handleAddRemoveAnime" class="log-button">
+                    Add to List
+                </button>
+                <!-- Only show Watched/Unwatched button if anime is in the user's list -->
+                <button v-if="isAnimeInUserList" @click="handleWatchedStatus"
+                    :class="['watched-button', { 'watched': isAnimeWatched, 'unwatched': !isAnimeWatched }]">
+                    {{ isAnimeWatched ? 'Watched' : 'Unwatched' }}
+                </button>
+            </div>
         </div>
         <div class="anime-info-right">
-            <h1 class="anime-title">{{ anime.title }}</h1>
+            <h1 class="anime-title">{{ anime.title }} {{ isAnimeWatched ? '(Watched)' : '(Unwatched)' }}</h1>
+
             <p class="anime-detail-text"><strong>Rating:</strong> {{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10
             </p>
             <p class="anime-detail-text"><strong>Episodes:</strong> {{ anime.num_episodes }}</p>
@@ -167,6 +170,12 @@ export default {
     width: 100%;
 }
 
+.buttonss {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
 .log-button {
     padding: 10px 30px;
     font-size: 16px;
@@ -174,7 +183,7 @@ export default {
     background-color: #7a2cf8;
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     width: 100%;
@@ -191,7 +200,7 @@ export default {
     font-weight: 600;
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     width: 100%;
