@@ -11,7 +11,7 @@
             <select id="year" v-model="year" @change="fetchAnimeBySeason">
                 <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
             </select>
-
+            <label></label>
             <label for="season">Select Season:</label>
             <select id="season" v-model="season" @change="fetchAnimeBySeason">
                 <option value="winter">Winter</option>
@@ -151,6 +151,9 @@ export default {
 /* Styling for the filter container */
 .filter-container {
     margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .filter-container label {
