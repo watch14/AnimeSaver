@@ -8,6 +8,7 @@ import SavedAnime from "@/components/SavedAnime.vue";
 import SharedList from "@/components/SharedList.vue";
 import TopAnime from "@/components/TopAnime.vue";
 import SeasonalAnime from "@/components/SeasonalAnime.vue";
+import Profile from "@/components/profile.vue";
 
 const routes = [
   { path: "/", component: Home },
@@ -46,6 +47,12 @@ const routes = [
     path: "/seasonal-anime",
     name: "SeasonalAnime",
     component: SeasonalAnime,
+    props: true,
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
     props: true,
   },
 ];

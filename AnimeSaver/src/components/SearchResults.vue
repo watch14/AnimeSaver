@@ -309,6 +309,7 @@ img.anime-image {
     height: 60px;
     animation: spin 1s linear infinite;
     margin-inline: auto;
+    margin: auto;
 }
 
 @keyframes spin {
