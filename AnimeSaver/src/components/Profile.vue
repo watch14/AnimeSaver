@@ -3,16 +3,15 @@
         <div v-if="loading" class="loader"></div>
 
         <div v-if="!loading && userData">
-            <div class="user-info">
-                <h2>Welcome, {{ userData.userName }}!</h2>
-                <!-- <button @click="logout" class="logout-button">Log Out</button> -->
-                <button @click="redirectToSavedAnime" class="redirect-button"> <router-link to="/saved-anime">Saved
-                        Anime</router-link>
-                </button>
-            </div>
 
             <div v-if="animeList.length > 0" class="anime-stats">
-                <h3>Stats</h3>
+                <div class="user-info">
+                    <h2>Welcome, {{ userData.userName }}!</h2>
+                    <!-- <button @click="logout" class="logout-button">Log Out</button> -->
+
+                </div>
+                <p>Your Personal Anime Stats</p>
+
                 <div class="stats-container">
                     <div class="stats-item">
                         <h4>Total Anime</h4>
@@ -27,6 +26,9 @@
                         <p>{{ unwatchedAnimeCount }}</p>
                     </div>
                 </div>
+                <button @click="redirectToSavedAnime" class="redirect-button">
+                    <router-link to="/saved-anime">Visit your saved anime</router-link>
+                </button>
             </div>
         </div>
     </div>
@@ -143,7 +145,10 @@ export default {
 
 /* User Info Section */
 .user-info {
-    margin-bottom: 20px;
+    margin: 0;
+    margin-bottom: 40px;
+    color: #dddddd;
+    font-size: 24px;
 }
 
 .logout-button {
@@ -163,22 +168,31 @@ export default {
 }
 
 /* Anime Stats Section */
+.anime-stats {
+    border: rgb(148, 148, 148) 1px solid;
+    border-radius: 24px;
+    padding: 60px 20px;
+    margin: 20px 20px 40px;
+    width: auto;
+    margin-inline: auto;
+}
 
-
-.anime-stats h3 {
-    color: #561eaf;
+.anime-stats p {
+    color: #6e6e6e;
+    margin: 0;
     margin-bottom: 10px;
     font-size: 20px;
     font-weight: 600;
 }
 
 .stats-container {
-    margin: ;
     display: flex;
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
     gap: 20px;
+
+
 }
 
 .stats-item,
@@ -186,19 +200,29 @@ export default {
 .stats-item-unwatched {
     margin: 10px 0;
     background-color: #411d7a;
-    border: 1px solid #ddd;
     border-radius: 12px;
     padding: 20px;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 200px;
+    transition: scale 0.5s ease;
 }
+
+.stats-item-watched {
+    background-color: #4caf50;
+}
+
+.stats-item-unwatched {
+    background-color: #f56c6c;
+}
+
 
 .stats-item:hover,
 .stats-item-watched:hover,
 .stats-item-unwatched:hover {
 
-    background-color: #551dad;
+    scale: 1.01;
+
 }
 
 
@@ -208,7 +232,7 @@ export default {
     margin: 0;
     font-size: 18px;
     padding-bottom: 10px;
-    color: #b897ee;
+    color: #ffffff;
 }
 
 .stats-item p,
@@ -221,18 +245,23 @@ export default {
 }
 
 .redirect-button {
-    padding: 12px 24px;
-    font-size: 16px;
+    padding: 16px 0;
+    font-size: 18px;
+    font-weight: 600;
     background-color: #411d7a;
     color: white;
     border: none;
     border-radius: 8px;
     transition: background-color 0.3s ease;
     cursor: pointer;
+    width: 250px;
+    margin: 60px 0 0;
+    border: transparent 1px solid;
 }
 
 .redirect-button:hover {
     background-color: #6d24e4;
+    border: #dddddd 1px solid;
 }
 
 .redirect-button a {
