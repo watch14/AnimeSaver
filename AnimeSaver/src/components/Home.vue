@@ -44,9 +44,9 @@ export default {
 
 .search-input {
     padding: 10px;
-    font-size: 1em;
+    font-size: 16px;
     border: 1px solid #5b22b6;
-    border-radius: 8px 0 0 8px;
+    border-radius: none;
     outline: none;
     width: 300px;
 }

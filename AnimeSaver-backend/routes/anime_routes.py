@@ -275,6 +275,13 @@ def get_anime_ranking():
             'description': 'Sort by (anime_score, anime_num_list_users)'
         },
         {
+            'name': 'sort_order',
+            'in': 'query',
+            'type': 'string',
+            'default': 'desc',
+            'description': 'Sort order (asc or desc)'
+        },
+        {
             'name': 'limit',
             'in': 'query',
             'type': 'integer',
@@ -338,6 +345,7 @@ def get_seasonal_anime(year, season):
     fields = request.args.get('fields', 'id,title,mean,num_episodes,genres,status,start_date')
     min_rating = request.args.get('min_rating', type=float)
     max_rating = request.args.get('max_rating', type=float)
+    sort_order = request.args.get('sort_order', 'desc')
 
     params = {
         'sort': sort,
@@ -358,8 +366,11 @@ def get_seasonal_anime(year, season):
                 filtered_data.append(item)
         result['data'] = filtered_data
 
-    return jsonify(result)
+    # Sort results based on sort_order if applicable
+    if sort == 'mean':
+        result['data'].sort(key=lambda x: x['node'].get('mean', 0), reverse=(sort_order == 'desc'))
 
+    return jsonify(result)
 
 # @anime_bp.route('/anime/suggestions', methods=['GET'])
 # @swag_from({
