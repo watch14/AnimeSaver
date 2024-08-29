@@ -93,24 +93,24 @@ const auth = {
    * @param {string} id - The ID of the user to fetch.
    * @returns {Promise<void>} - Returns a promise that resolves when the user data is fetched and printed.
    */
-  async getUserById(id) {
-    if (!id) {
-      console.error("No user ID provided.");
-      return;
-    }
+  // async getUserById(id) {
+  //   if (!id) {
+  //     console.error("No user ID provided.");
+  //     return;
+  //   }
 
-    try {
-      const response = await axios.get(`/user/${id}`);
+  //   try {
+  //     const response = await axios.get(`/user/${id}`);
 
-      if (response.status === 200) {
-        console.log("User data:", response.data);
-      } else {
-        console.log("Failed to fetch user data. Status code:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  },
+  //     if (response.status === 200) {
+  //       console.log("User data:", response.data);
+  //     } else {
+  //       console.log("Failed to fetch user data. Status code:", response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching user data:", error);
+  //   }
+  // },
 
   /**
    * Fetch the list of anime IDs saved by the user.

@@ -11,19 +11,19 @@
         </div> -->
 
         <!-- Anime List -->
-        <div v-if="animeList.length > 0 && !loading" class="anime-grid">
+        <div v-if="animeList.length > 0" class="anime-grid">
             <div v-for="anime in animeList" :key="anime.id" class="anime-card">
                 <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
                     class="anime-image" />
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
-                    <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
-                    <div class="rating-container">
-                        <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
-                        <button @click="handleAddAnime(anime.id)" class="log-button">
-                            {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
-                        </button>
+                    <div class="name-reate">
+                        <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
+                        <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }}</p>
                     </div>
+                    <button @click="handleAddAnime(anime.id)" class="log-button">
+                        {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -133,46 +133,41 @@ export default {
 </script>
 
 <style scoped>
-/* Reuse styles from the previous search results page */
-/* Styling for the container */
+/* Similar styles as your ranking results page */
 .search-results-container {
     text-align: center;
     padding: 20px;
 }
 
-/* Styling for the search bar */
-.search-bar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Styling for the filter container */
+.filter-container {
     margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.search-input {
-    padding: 10px;
-    font-size: 1em;
-    border: 1px solid #5b22b6;
-    border-radius: 8px 0 0 8px;
-    outline: none;
-    width: 300px;
+.filter-container label {
+    margin: 0 8px 0 24px;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgb(153, 153, 153);
+
 }
 
-.search-button {
-    padding: 10px 20px;
-    font-size: 1em;
-    background-color: #5b22b6;
-    color: white;
+.filter-container select {
+    padding: 6px 12px;
+    font-size: 16px;
+    font-weight: 700;
+
+    border-radius: 8px;
     border: none;
-    border-radius: 0 8px 8px 0;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.search-button:hover {
+    color: white;
     background-color: #411d7a;
+
+
 }
 
-/* Styling for the grid container */
 .anime-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -190,13 +185,10 @@ export default {
     transition: transform 0.2s ease;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     width: 100%;
     height: 100%;
 }
-
-/* .anime-card:hover {
-    transform: scale(1.02);
-} */
 
 /* Styling for the image */
 img.anime-image {
@@ -214,7 +206,7 @@ img.anime-image {
     text-align: left;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end;
 }
 
 .anime-title {
@@ -228,11 +220,19 @@ img.anime-image {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+
     cursor: pointer;
 }
 
 .anime-title:hover {
     text-decoration: underline;
+}
+
+.name-reate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
 }
 
 /* Rating text styling */
@@ -250,17 +250,7 @@ img.anime-image {
     justify-content: space-between;
 }
 
-/* Heart icon styling */
-.heart-icon {
-    font-size: 24px;
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-.hearted {
-    color: red;
-}
-
+/* Button styling */
 .log-button {
     padding: 10px 30px;
     font-size: 16px;
@@ -268,7 +258,7 @@ img.anime-image {
     background-color: #7a2cf8;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -277,7 +267,6 @@ img.anime-image {
     background-color: #6b23e0;
 }
 
-/* Styling for pagination controls */
 .pagination-controls {
     margin-top: 20px;
 }
@@ -309,7 +298,7 @@ img.anime-image {
 
 /* Loader Styles */
 .loader {
-    margin-top: 20px;
+    margin: 20px;
     padding: 20px;
     font-size: 1.5em;
     color: #7a7681;
@@ -320,7 +309,6 @@ img.anime-image {
     height: 60px;
     animation: spin 1s linear infinite;
     margin-inline: auto;
-
 }
 
 @keyframes spin {

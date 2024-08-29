@@ -12,7 +12,7 @@
                     <h2 class="anime-title">{{ anime.title }}</h2>
                     <div class="name-reate">
                         <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
-                        <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
+                        <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }}</p>
                     </div>
                     <button @click="handleAddAnime(anime.id)" class="log-button">
                         {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
@@ -195,7 +195,7 @@ img.anime-image {
     background-color: #7a2cf8;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }

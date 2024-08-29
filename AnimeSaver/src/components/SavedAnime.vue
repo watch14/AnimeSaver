@@ -36,7 +36,7 @@
                     <h2 class="anime-title">{{ anime.title }}</h2>
                     <div class="name-reate">
                         <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
-                        <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
+                        <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }}</p>
                     </div>
                     <button @click="toggleWatchedStatus(anime.id, anime.watched)"
                         :class="['status-button', { 'watched': anime.watched, 'unwatched': !anime.watched }]">

@@ -42,7 +42,7 @@
                     <h2 class="anime-title">{{ anime.title }}</h2>
                     <div class="name-reate">
                         <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
-                        <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
+                        <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }}</p>
                     </div>
                     <button @click="handleAddAnime(anime.id)" class="log-button">
                         {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
@@ -293,13 +293,42 @@ img.anime-image {
     background-color: #7a2cf8;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .log-button:hover {
     background-color: #6b23e0;
+}
+
+.pagination-controls {
+    margin-top: 20px;
+}
+
+.pagination-controls button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #5b22b6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: background-color 0.3s ease;
+}
+
+.pagination-controls button:hover {
+    background-color: #411d7a;
+}
+
+.pagination-controls button:disabled {
+    background-color: #d6d6d6;
+    cursor: not-allowed;
+}
+
+.page-number {
+    margin: 0 15px;
 }
 
 /* Loader Styles */
