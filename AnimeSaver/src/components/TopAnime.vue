@@ -1,10 +1,9 @@
 <template>
-
-
     <!-- Loader -->
     <div v-if="loading" class="loader"></div>
+
     <div v-if="!loading" class="ranking-results-container">
-        <h1>Anime Rankings</h1>
+        <h1>Top Anime</h1>
 
         <!-- Ranking Type Filter -->
         <div class="filter-container">
@@ -20,17 +19,14 @@
             </select>
         </div>
 
-
         <!-- Anime List -->
-        <div v-if="animeList.length > 0 && !loading" class="anime-grid">
+        <div v-if="animeList.length > 0" class="anime-grid">
             <div v-for="anime in animeList" :key="anime.id" class="anime-card">
                 <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
                     class="anime-image" />
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
                     <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
-                    <!-- <p class="anime-genres">Genres: {{ anime.genres?.map(genre => genre.name).join(', ') || 'N/A' }}</p>
-                    <p class="anime-status">Status: {{ anime.status || 'N/A' }}</p> -->
                     <div class="rating-container">
                         <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
                         <button @click="handleAddAnime(anime.id)" class="log-button">
@@ -42,7 +38,7 @@
         </div>
 
         <!-- Pagination Controls -->
-        <div v-if="!loading && animeList.length > 0" class="pagination-controls">
+        <div v-if="animeList.length > 0" class="pagination-controls">
             <button @click="prevPage" :disabled="currentPage <= 1">Previous</button>
             <span class="page-number">Page {{ currentPage }}</span>
             <button @click="nextPage" :disabled="animeList.length < limit">Next</button>
@@ -58,7 +54,7 @@ export default {
         return {
             animeList: [],
             currentPage: 1,
-            limit: 14, // Adjust limit as needed
+            limit: 21, // Adjust limit as needed
             userAnimeList: [], // User's saved anime IDs
             loading: false, // Loading state
             rankingType: 'all', // Default ranking type
@@ -130,6 +126,7 @@ export default {
             }
         },
         nextPage() {
+            // Only fetch new data if there's a possibility of more results
             if (this.animeList.length === this.limit) {
                 this.currentPage++;
                 this.fetchAnimeRanking();
@@ -140,7 +137,7 @@ export default {
 </script>
 
 <style scoped>
-/* Similar styles as your search results page */
+/* Container for ranking results and pagination */
 .ranking-results-container {
     text-align: center;
     padding: 20px;
@@ -181,13 +178,10 @@ export default {
     transition: transform 0.2s ease;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     width: 100%;
     height: 100%;
 }
-
-/* .anime-card:hover {
-    transform: scale(1.02);
-} */
 
 /* Styling for the image */
 img.anime-image {
@@ -205,7 +199,7 @@ img.anime-image {
     text-align: left;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end;
 }
 
 .anime-title {
@@ -268,6 +262,7 @@ img.anime-image {
     background-color: #6b23e0;
 }
 
+/* Pagination Controls */
 .pagination-controls {
     display: flex;
     justify-content: center;
@@ -288,7 +283,12 @@ img.anime-image {
     margin: 0 10px;
 }
 
-.pagination-controls button:hover {
+.pagination-controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-controls button:hover:not(:disabled) {
     background-color: #6b23e0;
 }
 

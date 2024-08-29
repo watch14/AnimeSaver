@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import AnimeSearch from "../components/Home.vue";
 import Login from "../components/Login.vue";
 import Register from "@/components/Register.vue";
 import AnimeDetail from "@/components/AnimeDetail.vue";

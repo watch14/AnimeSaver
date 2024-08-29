@@ -56,19 +56,27 @@ export default {
         return {
             animeList: [],
             currentPage: 1,
-            limit: 14, // Adjust limit as needed
+            limit: 21, // Adjust limit as needed
             userAnimeList: [], // User's saved anime IDs
             loading: false, // Loading state
-            season: 'winter', // Default season
+            season: '', // Will be set dynamically
             year: new Date().getFullYear(), // Default to the current year
             years: Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - i), // Last 20 years
         };
     },
     async created() {
+        this.season = this.getCurrentSeason(); // Set the current season
         await this.loadUserAnimeList(); // Load the user's anime list when the component is created
         await this.fetchAnimeBySeason(); // Fetch anime by season and year
     },
     methods: {
+        getCurrentSeason() {
+            const month = new Date().getMonth() + 1; // getMonth() returns 0-11, so add 1
+            if (month >= 12 || month <= 2) return 'winter';
+            if (month >= 3 && month <= 5) return 'spring';
+            if (month >= 6 && month <= 8) return 'summer';
+            if (month >= 9 && month <= 11) return 'fall';
+        },
         async fetchAnimeBySeason() {
             const offset = (this.currentPage - 1) * this.limit;
             this.loading = true; // Show loader
@@ -140,6 +148,7 @@ export default {
     }
 };
 </script>
+
 
 <style scoped>
 /* Similar styles as your ranking results page */
@@ -258,31 +267,30 @@ img.anime-image {
     background-color: #5b22b6;
 }
 
-/* Pagination Controls */
+/* Styling for pagination controls */
 .pagination-controls {
     margin-top: 20px;
 }
 
 .pagination-controls button {
     padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #411d7a;
-    border: 1px solid #411d7a;
+    font-size: 1em;
+    background-color: #5b22b6;
+    color: white;
+    border: none;
     border-radius: 4px;
     cursor: pointer;
+    margin: 0 10px;
     transition: background-color 0.3s ease;
 }
 
-.pagination-controls button:disabled {
-    cursor: not-allowed;
-    background-color: #ccc;
-    border-color: #ccc;
+.pagination-controls button:hover {
+    background-color: #411d7a;
 }
 
-.pagination-controls .page-number {
-    font-size: 16px;
-    margin: 0 10px;
+.pagination-controls button:disabled {
+    background-color: #d6d6d6;
+    cursor: not-allowed;
 }
 
 /* Loader Styles */

@@ -335,65 +335,72 @@ def get_seasonal_anime(year, season):
     return jsonify(result)
 
 
-@anime_bp.route('/anime/suggestions', methods=['GET'])
-@swag_from({
-    'tags': ['Anime Search'],
-    'summary': 'Get suggested anime',
-    'description': 'Retrieve a list of anime suggested for the authenticated user.',
-    'parameters': [
-        {
-            'name': 'limit',
-            'in': 'query',
-            'type': 'integer',
-            'default': 10,
-            'description': 'Number of results to return'
-        },
-        {
-            'name': 'offset',
-            'in': 'query',
-            'type': 'integer',
-            'default': 0,
-            'description': 'Offset for pagination'
-        },
-        {
-            'name': 'fields',
-            'in': 'query',
-            'type': 'string',
-            'default': 'id,title,mean,num_episodes,genres,status,start_date',
-            'description': 'Comma-separated list of fields to include in the response'
-        }
-    ],
-    'responses': {
-        '200': {
-            'description': 'A list of suggested anime',
-            'schema': {
-                'type': 'object',
-                'properties': {
-                    'data': {
-                        'type': 'array',
-                        'items': {
-                            'type': 'object'
-                        }
-                    }
-                }
-            }
-        },
-        '500': {
-            'description': 'Server error',
-            'schema': {'type': 'object', 'properties': {'error': {'type': 'string'}}}
-        }
-    }
-})
-def get_suggested_anime():
-    limit = request.args.get('limit', 10)
-    offset = request.args.get('offset', 0)
-    fields = request.args.get('fields', 'id,title,mean,num_episodes,genres,status,start_date')
+# @anime_bp.route('/anime/suggestions', methods=['GET'])
+# @swag_from({
+#     'tags': ['Anime Search'],
+#     'summary': 'Get suggested anime',
+#     'description': 'Retrieve a list of anime suggested for the authenticated user.',
+#     'parameters': [
+#         {
+#             'name': 'limit',
+#             'in': 'query',
+#             'type': 'integer',
+#             'default': 10,
+#             'description': 'Number of results to return'
+#         },
+#         {
+#             'name': 'offset',
+#             'in': 'query',
+#             'type': 'integer',
+#             'default': 0,
+#             'description': 'Offset for pagination'
+#         },
+#         {
+#             'name': 'fields',
+#             'in': 'query',
+#             'type': 'string',
+#             'default': 'id,title,mean,num_episodes,genres,status,start_date',
+#             'description': 'Comma-separated list of fields to include in the response'
+#         }
+#     ],
+#     'responses': {
+#         '200': {
+#             'description': 'A list of suggested anime',
+#             'schema': {
+#                 'type': 'object',
+#                 'properties': {
+#                     'data': {
+#                         'type': 'array',
+#                         'items': {
+#                             'type': 'object'
+#                         }
+#                     }
+#                 }
+#             }
+#         },
+#         '500': {
+#             'description': 'Server error',
+#             'schema': {'type': 'object', 'properties': {'error': {'type': 'string'}}}
+#         }
+#     }
+# })
+# def get_suggested_anime():
+#     limit = request.args.get('limit', 10)
+#     offset = request.args.get('offset', 0)
+#     fields = request.args.get('fields', 'id,title,mean,num_episodes,genres,status,start_date')
 
-    params = {
-        'limit': limit,
-        'offset': offset,
-        'fields': fields
-    }
-    endpoint = f'{MYANIMELIST_API_URL}/suggestions'
-    result = make_mal_request(endpoint, params)
-    return jsonify(result)
+#     params = {
+#         'limit': limit,
+#         'offset': offset,
+#         'fields': fields
+#     }
+#     endpoint = f'{MYANIMELIST_API_URL}/suggestions'
+#     headers = {
+#         'Authorization': 'Bearer YOUR_ACCESS_TOKEN'  # Replace with your actual token
+#     }
+#     response = requests.get(endpoint, headers=headers, params=params)
+
+#     if response.status_code == 200:
+#         return jsonify(response.json())
+#     else:
+#         return jsonify({'error': response.json().get('error', 'An error occurred')}), response.status_code

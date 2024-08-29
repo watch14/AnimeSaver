@@ -4,11 +4,11 @@
     <div v-if="loading" class="loader"></div>
 
     <div v-if="!loading" class="search-results-container">
-        <h1>Search</h1>
-        <div class="search-bar">
+        <h1>Search Resault</h1>
+        <!-- <div class="search-bar">
             <input v-model="query" @keyup.enter="searchAnime" placeholder="Search for anime..." class="search-input" />
             <button @click="searchAnime" class="search-button">Search</button>
-        </div>
+        </div> -->
 
         <!-- Anime List -->
         <div v-if="animeList.length > 0 && !loading" class="anime-grid">

@@ -5,9 +5,15 @@
                 <h1>AnimeSaver</h1>
             </router-link>
         </div>
+        <div class="search-bar">
+            <input v-model="searchQuery" @keyup.enter="searchAnime" placeholder="Search for anime..."
+                class="search-input" />
+            <button @click="searchAnime" class="search-button">Search</button>
+        </div>
         <nav>
             <!-- Conditional rendering based on login status -->
             <span v-if="loggedIn" class="username">Hello, {{ username }}</span>
+            <router-link v-if="loggedIn" to="/">Home</router-link>
             <router-link v-if="loggedIn" to="/top-anime">Top Anime</router-link>
             <router-link v-if="loggedIn" to="/seasonal-anime">Seasonal Anime</router-link>
             <router-link v-if="loggedIn" to="/saved-anime">Saved Anime</router-link>
@@ -15,6 +21,7 @@
             <router-link v-if="!loggedIn" to="/register">Register</router-link>
             <button v-if="loggedIn" @click="handleLogout">Logout</button>
         </nav>
+
     </header>
 </template>
 
@@ -33,11 +40,21 @@ export default {
             default: ''
         }
     },
+    data() {
+        return {
+            searchQuery: ''
+        };
+    },
     methods: {
         async handleLogout() {
             await auth.logout();
             this.$emit('logout');
             this.$router.push('/'); // Redirect to home page
+        },
+        searchAnime() {
+            if (this.searchQuery.trim()) {
+                this.$router.push({ name: 'SearchResults', query: { q: this.searchQuery } });
+            }
         }
     }
 };
@@ -83,5 +100,35 @@ button:hover {
 .username {
     color: rgb(192, 192, 192);
     margin: 0 10px;
+}
+
+/* Search bar styling */
+.search-bar {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #5b22b6;
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    width: 200px;
+}
+
+.search-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #5b22b6;
+    color: white;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+    background-color: #411d7a;
 }
 </style>
