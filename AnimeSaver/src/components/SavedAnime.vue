@@ -1,5 +1,7 @@
 <template>
-    <div class="saved-anime-container">
+    <!-- Loader -->
+    <div v-if="loading" class="loader"></div>
+    <div v-if="!loading" class="saved-anime-container">
         <h1>Saved Anime</h1>
 
         <!-- Filter Buttons -->
@@ -22,8 +24,7 @@
             </div>
         </div>
 
-        <!-- Loader -->
-        <div v-if="loading" class="loader"></div>
+
 
         <!-- Anime List -->
         <div v-if="!loading && filteredAnimeList.length > 0" class="anime-grid">

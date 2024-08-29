@@ -297,16 +297,19 @@ img.anime-image {
     font-weight: bold;
 }
 
-/* Loader Styling */
+/* Loader Styles */
 .loader {
-    border: 8px solid #f3f3f3;
+    margin: 20px;
+    padding: 20px;
+    font-size: 1.5em;
+    color: #7a7681;
+    border: 4px solid #f3f3f3;
     border-radius: 50%;
-    border-top: 8px solid #7a2cf8;
+    border-top: 4px solid #411d7a;
     width: 60px;
     height: 60px;
-    animation: spin 2s linear infinite;
-    margin-left: auto;
-    margin-right: auto;
+    animation: spin 1s linear infinite;
+    margin-inline: auto;
 }
 
 @keyframes spin {

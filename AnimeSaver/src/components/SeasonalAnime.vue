@@ -1,17 +1,28 @@
 <template>
-
     <!-- Loader -->
     <div v-if="loading" class="loader"></div>
 
-    <div v-if="!loading" class="search-results-container">
-        <h1>Search</h1>
-        <div class="search-bar">
-            <input v-model="query" @keyup.enter="searchAnime" placeholder="Search for anime..." class="search-input" />
-            <button @click="searchAnime" class="search-button">Search</button>
+    <div v-if="!loading" class="season-results-container">
+        <h1>Anime by Season</h1>
+
+        <!-- Season and Year Filter -->
+        <div class="filter-container">
+            <label for="year">Select Year:</label>
+            <select id="year" v-model="year" @change="fetchAnimeBySeason">
+                <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
+            </select>
+
+            <label for="season">Select Season:</label>
+            <select id="season" v-model="season" @change="fetchAnimeBySeason">
+                <option value="winter">Winter</option>
+                <option value="spring">Spring</option>
+                <option value="summer">Summer</option>
+                <option value="fall">Fall</option>
+            </select>
         </div>
 
         <!-- Anime List -->
-        <div v-if="animeList.length > 0 && !loading" class="anime-grid">
+        <div v-if="animeList.length > 0" class="anime-grid">
             <div v-for="anime in animeList" :key="anime.id" class="anime-card">
                 <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
                     class="anime-image" />
@@ -43,41 +54,39 @@ import auth from '@/utils/auth'; // Adjust the path as needed
 export default {
     data() {
         return {
-            query: this.$route.query.q || '',
             animeList: [],
             currentPage: 1,
-            limit: 14,
-            userAnimeList: [], // This will hold the IDs of the anime saved by the user
-            loading: false // Loading state
+            limit: 14, // Adjust limit as needed
+            userAnimeList: [], // User's saved anime IDs
+            loading: false, // Loading state
+            season: 'winter', // Default season
+            year: new Date().getFullYear(), // Default to the current year
+            years: Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - i), // Last 20 years
         };
     },
     async created() {
         await this.loadUserAnimeList(); // Load the user's anime list when the component is created
-        await this.fetchAnimeData(); // Fetch anime data based on the initial query
-    },
-    watch: {
-        '$route.query.q': 'fetchAnimeData' // Watch for changes in the query parameter and fetch new data
+        await this.fetchAnimeBySeason(); // Fetch anime by season and year
     },
     methods: {
-        async searchAnime() {
-            this.currentPage = 1;
-            this.$router.push({ name: 'SearchResults', query: { q: this.query } });
-        },
-        async fetchAnimeData() {
-            this.query = this.$route.query.q || ''; // Update the query from the route
+        async fetchAnimeBySeason() {
             const offset = (this.currentPage - 1) * this.limit;
             this.loading = true; // Show loader
             try {
-                const response = await fetch(`http://localhost:5000/api/anime/search?q=${this.query}&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
-                const data = await response.json();
-                if (Array.isArray(data.data)) {
-                    this.animeList = data.data.map(item => item.node);
+                const response = await fetch(
+                    `http://localhost:5000/api/anime/season/${this.year}/${this.season}?sort=anime_score&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,status,main_picture`
+                );
+                const responseData = await response.json();
+
+                // Check if the 'data' field is an array and map it
+                if (Array.isArray(responseData.data)) {
+                    this.animeList = responseData.data.map(item => item.node); // Access the 'node' property
                 } else {
-                    console.error('Data is not an array:', data);
+                    console.error('Data is not an array:', responseData);
                     this.animeList = [];
                 }
             } catch (error) {
-                console.error('Error fetching anime data:', error);
+                console.error('Error fetching anime by season:', error);
                 this.animeList = [];
             } finally {
                 this.loading = false; // Hide loader
@@ -86,14 +95,14 @@ export default {
         async loadUserAnimeList() {
             try {
                 const userAnimeObjects = await auth.getUserAnimeList();
-                this.userAnimeList = userAnimeObjects.map(anime => anime.id.toString()); // Extract only the IDs and convert them to strings
+                this.userAnimeList = userAnimeObjects.map(anime => anime.id.toString());
             } catch (error) {
                 console.error('Error fetching user anime list:', error);
                 this.userAnimeList = [];
             }
         },
         isAnimeInUserList(animeId) {
-            return this.userAnimeList.includes(animeId.toString()); // Check if the anime ID is in the user's list
+            return this.userAnimeList.includes(animeId.toString());
         },
         async handleAddAnime(animeId) {
             const loggedIn = await auth.isLoggedIn();
@@ -119,57 +128,41 @@ export default {
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.fetchAnimeData();
+                this.fetchAnimeBySeason();
             }
         },
         nextPage() {
             if (this.animeList.length === this.limit) {
                 this.currentPage++;
-                this.fetchAnimeData();
+                this.fetchAnimeBySeason();
             }
-        }
+        },
     }
 };
 </script>
 
 <style scoped>
-/* Reuse styles from the previous search results page */
-/* Styling for the container */
-.search-results-container {
+/* Similar styles as your ranking results page */
+.season-results-container {
     text-align: center;
     padding: 20px;
 }
 
-/* Styling for the search bar */
-.search-bar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Styling for the filter container */
+.filter-container {
     margin-bottom: 20px;
 }
 
-.search-input {
-    padding: 10px;
-    font-size: 1em;
-    border: 1px solid #5b22b6;
-    border-radius: 8px 0 0 8px;
-    outline: none;
-    width: 300px;
+.filter-container label {
+    margin-right: 10px;
+    font-weight: bold;
 }
 
-.search-button {
-    padding: 10px 20px;
-    font-size: 1em;
-    background-color: #5b22b6;
-    color: white;
-    border: none;
-    border-radius: 0 8px 8px 0;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.search-button:hover {
-    background-color: #411d7a;
+.filter-container select {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 /* Styling for the grid container */
@@ -193,10 +186,6 @@ export default {
     width: 100%;
     height: 100%;
 }
-
-/* .anime-card:hover {
-    transform: scale(1.02);
-} */
 
 /* Styling for the image */
 img.anime-image {
@@ -250,17 +239,6 @@ img.anime-image {
     justify-content: space-between;
 }
 
-/* Heart icon styling */
-.heart-icon {
-    font-size: 24px;
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-.hearted {
-    color: red;
-}
-
 .log-button {
     padding: 10px 30px;
     font-size: 16px;
@@ -274,42 +252,39 @@ img.anime-image {
 }
 
 .log-button:hover {
-    background-color: #6b23e0;
+    background-color: #5b22b6;
 }
 
-/* Styling for pagination controls */
+/* Pagination Controls */
 .pagination-controls {
     margin-top: 20px;
 }
 
 .pagination-controls button {
     padding: 10px 20px;
-    font-size: 1em;
-    background-color: #5b22b6;
-    color: white;
-    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #411d7a;
+    border: 1px solid #411d7a;
     border-radius: 4px;
     cursor: pointer;
-    margin: 0 10px;
     transition: background-color 0.3s ease;
 }
 
-.pagination-controls button:hover {
-    background-color: #411d7a;
-}
-
 .pagination-controls button:disabled {
-    background-color: #d6d6d6;
     cursor: not-allowed;
+    background-color: #ccc;
+    border-color: #ccc;
 }
 
-.page-number {
-    margin: 0 15px;
+.pagination-controls .page-number {
+    font-size: 16px;
+    margin: 0 10px;
 }
 
 /* Loader Styles */
 .loader {
-    margin-top: 20px;
+    margin: 20px;
     padding: 20px;
     font-size: 1.5em;
     color: #7a7681;
@@ -320,7 +295,6 @@ img.anime-image {
     height: 60px;
     animation: spin 1s linear infinite;
     margin-inline: auto;
-
 }
 
 @keyframes spin {
