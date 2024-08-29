@@ -26,13 +26,13 @@
                     class="anime-image" />
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
-                    <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
-                    <div class="rating-container">
+                    <div class="name-reate">
+                        <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
                         <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
-                        <button @click="handleAddAnime(anime.id)" class="log-button">
-                            {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
-                        </button>
                     </div>
+                    <button @click="handleAddAnime(anime.id)" class="log-button">
+                        {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -145,7 +145,7 @@ export default {
 
 
 <style scoped>
-/* Container for ranking results and pagination */
+/* Similar styles as your ranking results page */
 .ranking-results-container {
     text-align: center;
     padding: 20px;
@@ -154,21 +154,32 @@ export default {
 /* Styling for the filter container */
 .filter-container {
     margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .filter-container label {
-    margin-right: 10px;
-    font-weight: bold;
+    margin: 0 8px 0 24px;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgb(153, 153, 153);
+
 }
 
 .filter-container select {
-    padding: 8px;
+    padding: 6px 12px;
     font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    font-weight: 700;
+
+    border-radius: 8px;
+    border: none;
+    color: white;
+    background-color: #411d7a;
+
+
 }
 
-/* Styling for the grid container */
 .anime-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -228,6 +239,13 @@ img.anime-image {
     text-decoration: underline;
 }
 
+.name-reate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
 /* Rating text styling */
 .anime-rating-text {
     font-size: 14px;
@@ -243,17 +261,7 @@ img.anime-image {
     justify-content: space-between;
 }
 
-/* Heart icon styling */
-.heart-icon {
-    font-size: 24px;
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-.hearted {
-    color: red;
-}
-
+/* Button styling */
 .log-button {
     padding: 10px 30px;
     font-size: 16px;
@@ -268,41 +276,6 @@ img.anime-image {
 
 .log-button:hover {
     background-color: #6b23e0;
-}
-
-/* Pagination Controls */
-.pagination-controls {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    align-items: center;
-}
-
-.pagination-controls button {
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    background-color: #7a2cf8;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: 0 10px;
-}
-
-.pagination-controls button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.pagination-controls button:hover:not(:disabled) {
-    background-color: #6b23e0;
-}
-
-.page-number {
-    font-size: 16px;
-    font-weight: bold;
 }
 
 /* Loader Styles */

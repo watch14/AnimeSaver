@@ -33,18 +33,18 @@
                 <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
                     class="anime-image" />
                 <div class="anime-details">
-                    <h2 class="anime-title" @click="goToAnimePage(anime.id)">{{ anime.title }}</h2>
-                    <div class="rating-container">
+                    <h2 class="anime-title">{{ anime.title }}</h2>
+                    <div class="name-reate">
+                        <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
                         <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
-                        <button @click="toggleWatchedStatus(anime.id, anime.watched)"
-                            :class="['status-button', { 'watched': anime.watched, 'unwatched': !anime.watched }]">
-                            {{ anime.watched ? 'Watched' : 'Unwatched' }}
-                        </button>
                     </div>
+                    <button @click="toggleWatchedStatus(anime.id, anime.watched)"
+                        :class="['status-button', { 'watched': anime.watched, 'unwatched': !anime.watched }]">
+                        {{ anime.watched ? 'Watched' : 'Unwatched' }}
+                    </button>
                 </div>
             </div>
         </div>
-
         <div v-if="!loading && filteredAnimeList.length > 0" class="pagination-controls">
             <button @click="prevPage" :disabled="currentPage <= 1">Previous</button>
             <span class="page-number">Page {{ currentPage }} of {{ totalPages }}</span>
@@ -298,7 +298,9 @@ export default {
     margin-top: 20px;
 }
 
+/* Styling for each anime card */
 .anime-card {
+    position: relative;
     border: 1px solid #5b22b6;
     border-radius: 8px;
     overflow: hidden;
@@ -307,11 +309,9 @@ export default {
     transition: transform 0.2s ease;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     width: 100%;
     height: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-    position: relative;
 }
 
 /* .anime-card:hover {
@@ -357,7 +357,7 @@ img.anime-image {
     text-align: left;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end;
 }
 
 .anime-title {
@@ -378,6 +378,13 @@ img.anime-image {
     text-decoration: underline;
 }
 
+.name-reate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
 .anime-rating-text {
     font-size: 14px;
     font-weight: 600;
@@ -392,15 +399,15 @@ img.anime-image {
 }
 
 .status-button {
-    padding: 10px 20px;
-    font-size: 14px;
+    padding: 10px 30px;
+    font-size: 16px;
     font-weight: 600;
+    background-color: #7a2cf8;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-right: 10px;
 }
 
 .status-button.watched {

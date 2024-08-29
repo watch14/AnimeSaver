@@ -40,13 +40,13 @@
                     class="anime-image" />
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
-                    <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
-                    <div class="rating-container">
+                    <div class="name-reate">
+                        <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
                         <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
-                        <button @click="handleAddAnime(anime.id)" class="log-button">
-                            {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
-                        </button>
                     </div>
+                    <button @click="handleAddAnime(anime.id)" class="log-button">
+                        {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -204,7 +204,6 @@ export default {
 
 }
 
-/* Styling for the grid container */
 .anime-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -222,6 +221,7 @@ export default {
     transition: transform 0.2s ease;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     width: 100%;
     height: 100%;
 }
@@ -242,7 +242,7 @@ img.anime-image {
     text-align: left;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end;
 }
 
 .anime-title {
@@ -263,6 +263,13 @@ img.anime-image {
     text-decoration: underline;
 }
 
+.name-reate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
 /* Rating text styling */
 .anime-rating-text {
     font-size: 14px;
@@ -278,6 +285,7 @@ img.anime-image {
     justify-content: space-between;
 }
 
+/* Button styling */
 .log-button {
     padding: 10px 30px;
     font-size: 16px;
@@ -291,33 +299,7 @@ img.anime-image {
 }
 
 .log-button:hover {
-    background-color: #5b22b6;
-}
-
-/* Styling for pagination controls */
-.pagination-controls {
-    margin-top: 20px;
-}
-
-.pagination-controls button {
-    padding: 10px 20px;
-    font-size: 1em;
-    background-color: #5b22b6;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 0 10px;
-    transition: background-color 0.3s ease;
-}
-
-.pagination-controls button:hover {
-    background-color: #411d7a;
-}
-
-.pagination-controls button:disabled {
-    background-color: #d6d6d6;
-    cursor: not-allowed;
+    background-color: #6b23e0;
 }
 
 /* Loader Styles */
