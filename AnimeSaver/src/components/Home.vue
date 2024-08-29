@@ -1,45 +1,28 @@
 <template>
     <div class="search-container">
-        <h1>Wemcome Home</h1>
-
-        <!-- <h1>Search</h1>
-        <div class="search-bar">
-            <input v-model="query" @keyup.enter="searchAnime" placeholder="Search for anime..." class="search-input" />
-            <button @click="searchAnime" class="search-button">Search</button>
-        </div> -->
+        <h1>Welcome Home</h1>
 
         <!-- Loader -->
         <div v-if="loading" class="loader">Searching...</div>
-
-        <!-- Display results (optional) -->
-        <!-- Add logic here to display search results if needed -->
+        <UpcomingAnime :initialRankingType="'upcoming'" />
     </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-
+// Import the Ranking component
+import UpcomingAnime from './UpcomingAnime.vue';
 export default {
+    components: {
+        UpcomingAnime // Register the Ranking component
+    },
     data() {
         return {
             query: '',
-            loading: ref(false) // Loading state
+            loading: false // Loading state
         };
     },
     methods: {
-        async searchAnime() {
-            if (this.query.trim()) {
-                this.loading = true; // Show loader
-                try {
-                    // Perform the search and navigate
-                    this.$router.push({ name: 'SearchResults', query: { q: this.query } });
-                } catch (error) {
-                    console.error('Search error:', error);
-                } finally {
-                    this.loading = false; // Hide loader
-                }
-            }
-        }
+        // Add any necessary methods here
     }
 };
 </script>
@@ -96,7 +79,6 @@ export default {
     height: 60px;
     animation: spin 1s linear infinite;
     margin-inline: auto;
-
 }
 
 @keyframes spin {

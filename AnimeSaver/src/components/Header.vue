@@ -122,10 +122,12 @@ button:hover {
     font-size: 1em;
     background-color: #5b22b6;
     color: white;
-    border: none;
     border-radius: 0 8px 8px 0;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    border: none;
+    box-shadow: inset 0 0 0 2px white;
+    margin: 0;
 }
 
 .search-button:hover {

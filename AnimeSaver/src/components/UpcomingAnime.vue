@@ -2,23 +2,7 @@
     <!-- Loader -->
     <div v-if="loading" class="loader"></div>
 
-    <div v-if="!loading" class="ranking-results-container">
-        <h1>Top Anime</h1>
-
-        <!-- Ranking Type Filter -->
-        <div class="filter-container">
-            <label for="ranking-type">Select Ranking Type:</label>
-            <select id="ranking-type" v-model="rankingType" @change="fetchAnimeRanking">
-                <option value="all">All</option>
-                <option value="airing">Airing</option>
-                <option value="upcoming">Upcoming</option>
-                <option value="tv">TV</option>
-                <option value="movie">Movie</option>
-                <option value="bypopularity">By Popularity</option>
-                <option value="favorite">Favorite</option>
-            </select>
-        </div>
-
+    <div v-if="!loading" class="anime-grid">
         <!-- Anime List -->
         <div v-if="animeList.length > 0" class="anime-grid">
             <div v-for="anime in animeList" :key="anime.id" class="anime-card">
@@ -26,22 +10,15 @@
                     class="anime-image" />
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
-                    <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
-                    <div class="rating-container">
+                    <div class="name-reate">
+                        <p class="anime-episodes">Episodes: {{ anime.num_episodes || 'N/A' }}</p>
                         <p class="anime-rating-text">{{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10</p>
-                        <button @click="handleAddAnime(anime.id)" class="log-button">
-                            {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
-                        </button>
                     </div>
+                    <button @click="handleAddAnime(anime.id)" class="log-button">
+                        {{ isAnimeInUserList(anime.id) ? 'Remove' : 'Save' }}
+                    </button>
                 </div>
             </div>
-        </div>
-
-        <!-- Pagination Controls -->
-        <div v-if="animeList.length > 0" class="pagination-controls">
-            <button @click="prevPage" :disabled="currentPage <= 1">Previous</button>
-            <span class="page-number">Page {{ currentPage }}</span>
-            <button @click="nextPage" :disabled="animeList.length < limit">Next</button>
         </div>
     </div>
 </template>
@@ -53,13 +30,12 @@ export default {
     props: {
         initialRankingType: {
             type: String,
-            default: 'all' // Default to 'all' if not provided
+            default: 'upcoming' // Default to 'upcoming' if not provided
         }
     },
     data() {
         return {
             animeList: [],
-            currentPage: 1,
             limit: 21, // Adjust limit as needed
             userAnimeList: [], // User's saved anime IDs
             loading: false, // Loading state
@@ -72,10 +48,9 @@ export default {
     },
     methods: {
         async fetchAnimeRanking() {
-            const offset = (this.currentPage - 1) * this.limit;
             this.loading = true; // Show loader
             try {
-                const response = await fetch(`http://localhost:5000/api/anime/ranking?ranking_type=${this.rankingType}&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,status,main_picture`);
+                const response = await fetch(`http://localhost:5000/api/anime/ranking?ranking_type=${this.rankingType}&limit=${this.limit}&fields=id,title,mean,num_episodes,main_picture`);
                 const responseData = await response.json();
 
                 // Check if the 'data' field is an array and map it
@@ -124,50 +99,12 @@ export default {
         },
         goToAnimePage(animeId) {
             this.$router.push({ name: 'AnimeDetail', params: { id: animeId.toString() } });
-        },
-        prevPage() {
-            if (this.currentPage > 1) {
-                this.currentPage--;
-                this.fetchAnimeRanking();
-            }
-        },
-        nextPage() {
-            // Only fetch new data if there's a possibility of more results
-            if (this.animeList.length === this.limit) {
-                this.currentPage++;
-                this.fetchAnimeRanking();
-            }
-        },
-    },
+        }
+    }
 };
 </script>
 
-
-
 <style scoped>
-/* Container for ranking results and pagination */
-.ranking-results-container {
-    text-align: center;
-    padding: 20px;
-}
-
-/* Styling for the filter container */
-.filter-container {
-    margin-bottom: 20px;
-}
-
-.filter-container label {
-    margin-right: 10px;
-    font-weight: bold;
-}
-
-.filter-container select {
-    padding: 8px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
 /* Styling for the grid container */
 .anime-grid {
     display: grid;
@@ -228,6 +165,13 @@ img.anime-image {
     text-decoration: underline;
 }
 
+.name-reate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
 /* Rating text styling */
 .anime-rating-text {
     font-size: 14px;
@@ -243,17 +187,7 @@ img.anime-image {
     justify-content: space-between;
 }
 
-/* Heart icon styling */
-.heart-icon {
-    font-size: 24px;
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-.hearted {
-    color: red;
-}
-
+/* Button styling */
 .log-button {
     padding: 10px 30px;
     font-size: 16px;
@@ -268,41 +202,6 @@ img.anime-image {
 
 .log-button:hover {
     background-color: #6b23e0;
-}
-
-/* Pagination Controls */
-.pagination-controls {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    align-items: center;
-}
-
-.pagination-controls button {
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    background-color: #7a2cf8;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: 0 10px;
-}
-
-.pagination-controls button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.pagination-controls button:hover:not(:disabled) {
-    background-color: #6b23e0;
-}
-
-.page-number {
-    font-size: 16px;
-    font-weight: bold;
 }
 
 /* Loader Styles */
