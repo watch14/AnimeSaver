@@ -13,16 +13,26 @@
         <nav>
             <!-- Conditional rendering based on login status -->
             <span v-if="loggedIn" class="username">Hello, {{ username }}</span>
-            <router-link v-if="loggedIn" to="/">Home</router-link>
-            <router-link v-if="loggedIn" to="/top-anime">Top Anime</router-link>
-            <router-link v-if="loggedIn" to="/seasonal-anime">Seasonal Anime</router-link>
-            <router-link v-if="loggedIn" to="/saved-anime">Saved Anime</router-link>
+            <router-link v-if="!loggedIn" to="/">Home</router-link>
+            <router-link v-if="!loggedIn" to="/top-anime">Top Anime</router-link>
+            <router-link v-if="!loggedIn" to="/seasonal-anime">Seasonal Anime</router-link>
+            <router-link v-if="!loggedIn" to="/saved-anime">Saved Anime</router-link>
+
+            <!-- Dropdown for logged-in users -->
+            <div v-if="loggedIn" class="user-menu">
+                <button @click="toggleDropdown" class="user-menu-button">
+                    <span>{{ username }}</span>
+                </button>
+                <div v-if="dropdownOpen" class="dropdown-menu">
+                    <router-link to="/profile" class="dropdown-item">Profile</router-link>
+                    <button @click="handleLogout" class="dropdown-item">Logout</button>
+                </div>
+            </div>
+
+            <!-- Links for not logged-in users -->
             <router-link v-if="!loggedIn" to="/login">Login</router-link>
             <router-link v-if="!loggedIn" to="/register">Register</router-link>
-            <router-link v-if="loggedIn" to="/profile">Profile</router-link>
-            <button v-if="loggedIn" @click="handleLogout">Logout</button>
         </nav>
-
     </header>
 </template>
 
@@ -43,7 +53,8 @@ export default {
     },
     data() {
         return {
-            searchQuery: ''
+            searchQuery: '',
+            dropdownOpen: false // State for dropdown visibility
         };
     },
     methods: {
@@ -56,12 +67,19 @@ export default {
             if (this.searchQuery.trim()) {
                 this.$router.push({ name: 'SearchResults', query: { q: this.searchQuery } });
             }
+        },
+        toggleDropdown() {
+            this.dropdownOpen = !this.dropdownOpen; // Toggle the dropdown visibility
         }
     }
 };
 </script>
 
 <style scoped>
+* {
+    margin: 0;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -79,7 +97,6 @@ export default {
 nav a {
     color: white;
     text-decoration: none;
-    margin: 0 10px;
 }
 
 nav a:hover {
@@ -132,6 +149,48 @@ button:hover {
 }
 
 .search-button:hover {
+    background-color: #411d7a;
+}
+
+/* User menu dropdown */
+.user-menu {
+    position: relative;
+}
+
+.user-menu-button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #260857;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    z-index: 1000;
+}
+
+.dropdown-item {
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    border-radius: 8px;
+
+}
+
+.dropdown-item:hover {
     background-color: #411d7a;
 }
 </style>
