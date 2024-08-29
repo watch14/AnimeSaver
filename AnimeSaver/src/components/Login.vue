@@ -44,7 +44,10 @@ export default {
                     // Show success message
                     alert('Login successful!');
                     // Optionally, redirect to another page or update UI
-                    this.$router.push('/');
+                    this.$router.push('/').then(() => {
+                        // Refresh the page
+                        window.location.reload();
+                    });
                 } else {
                     alert('Login failed: ' + response.data.message);
                 }

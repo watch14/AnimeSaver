@@ -12,16 +12,16 @@
         </div>
         <nav>
             <!-- Conditional rendering based on login status -->
-            <span v-if="loggedIn" class="username">Hello, {{ username }}</span>
-            <router-link v-if="!loggedIn" to="/">Home</router-link>
-            <router-link v-if="!loggedIn" to="/top-anime">Top Anime</router-link>
-            <router-link v-if="!loggedIn" to="/seasonal-anime">Seasonal Anime</router-link>
-            <router-link v-if="!loggedIn" to="/saved-anime">Saved Anime</router-link>
+            <!-- <span v-if="loggedIn" class="username">Hello, {{ username }}</span> -->
+            <router-link v-if="loggedIn" to="/">Home</router-link>
+            <router-link v-if="loggedIn" to="/top-anime">Top Anime</router-link>
+            <router-link v-if="loggedIn" to="/seasonal-anime">Seasonal Anime</router-link>
+            <router-link v-if="loggedIn" to="/saved-anime">Saved Anime</router-link>
 
             <!-- Dropdown for logged-in users -->
             <div v-if="loggedIn" class="user-menu">
                 <button @click="toggleDropdown" class="user-menu-button">
-                    <span>{{ username }}</span>
+                    <span>{{ username }} 👇</span>
                 </button>
                 <div v-if="dropdownOpen" class="dropdown-menu">
                     <router-link to="/profile" class="dropdown-item">Profile</router-link>
@@ -80,6 +80,12 @@ export default {
     margin: 0;
 }
 
+a,
+span {
+    font-size: 15px;
+    font-weight: 600;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -92,6 +98,12 @@ export default {
     margin: 0;
     color: white;
     font-weight: 700;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 nav a {
@@ -108,7 +120,7 @@ button {
     border: none;
     color: white;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px;
 }
 
 button:hover {
@@ -169,19 +181,18 @@ button:hover {
 
 .dropdown-menu {
     position: absolute;
-    top: 100%;
+    top: 130%;
     right: 0;
-    background-color: #260857;
+    background-color: #411d7a;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    width: 200px;
-    z-index: 1000;
+    width: 150px;
 }
 
 .dropdown-item {
-    padding: 10px;
+    padding: 14px;
     color: white;
     text-decoration: none;
     display: block;
@@ -191,6 +202,6 @@ button:hover {
 }
 
 .dropdown-item:hover {
-    background-color: #411d7a;
+    background-color: #502f86;
 }
 </style>
