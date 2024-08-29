@@ -5,19 +5,26 @@
     <div v-if="!loading" class="season-results-container">
         <h1>Anime by Season</h1>
 
-        <!-- Season and Year Filter -->
+        <!-- Season, Year, and Rating Filter -->
         <div class="filter-container">
             <label for="year">Select Year:</label>
             <select id="year" v-model="year" @change="fetchAnimeBySeason">
                 <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
             </select>
-            <label></label>
             <label for="season">Select Season:</label>
             <select id="season" v-model="season" @change="fetchAnimeBySeason">
                 <option value="winter">Winter</option>
                 <option value="spring">Spring</option>
                 <option value="summer">Summer</option>
                 <option value="fall">Fall</option>
+            </select>
+            <label for="rating-min">Min Rating:</label>
+            <select id="rating-min" v-model="ratingMin" @change="fetchAnimeBySeason">
+                <option v-for="r in ratingOptions" :key="r" :value="r">{{ r }}</option>
+            </select>
+            <label for="rating-max">Max Rating:</label>
+            <select id="rating-max" v-model="ratingMax" @change="fetchAnimeBySeason">
+                <option v-for="r in ratingOptions" :key="r" :value="r">{{ r }}</option>
             </select>
         </div>
 
@@ -62,6 +69,9 @@ export default {
             season: '', // Will be set dynamically
             year: new Date().getFullYear(), // Default to the current year
             years: Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - i), // Last 20 years
+            ratingMin: 0, // Minimum rating filter
+            ratingMax: 10, // Maximum rating filter
+            ratingOptions: Array.from({ length: 11 }, (_, i) => i) // Rating options from 0 to 10
         };
     },
     async created() {
@@ -80,15 +90,15 @@ export default {
         async fetchAnimeBySeason() {
             const offset = (this.currentPage - 1) * this.limit;
             this.loading = true; // Show loader
+            console.log(`Fetching with ratings: ${this.ratingMin} to ${this.ratingMax}`); // Debugging log
             try {
                 const response = await fetch(
-                    `http://localhost:5000/api/anime/season/${this.year}/${this.season}?sort=anime_score&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,status,main_picture`
+                    `http://localhost:5000/api/anime/season/${this.year}/${this.season}?sort=anime_score&limit=${this.limit}&offset=${offset}&min_rating=${this.ratingMin}&max_rating=${this.ratingMax}&fields=id,title,mean,num_episodes,genres,status,main_picture`
                 );
                 const responseData = await response.json();
 
-                // Check if the 'data' field is an array and map it
                 if (Array.isArray(responseData.data)) {
-                    this.animeList = responseData.data.map(item => item.node); // Access the 'node' property
+                    this.animeList = responseData.data.map(item => item.node);
                 } else {
                     console.error('Data is not an array:', responseData);
                     this.animeList = [];
@@ -99,7 +109,8 @@ export default {
             } finally {
                 this.loading = false; // Hide loader
             }
-        },
+        }
+        ,
         async loadUserAnimeList() {
             try {
                 const userAnimeObjects = await auth.getUserAnimeList();
@@ -148,6 +159,7 @@ export default {
     }
 };
 </script>
+
 
 
 <style scoped>

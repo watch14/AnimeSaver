@@ -247,7 +247,6 @@ def get_anime_ranking():
     result = make_mal_request(endpoint, params)
     return jsonify(result)
 
-
 @anime_bp.route('/anime/season/<int:year>/<season>', methods=['GET'])
 @swag_from({
     'tags': ['Anime Search'],
@@ -295,6 +294,20 @@ def get_anime_ranking():
             'type': 'string',
             'default': 'id,title,mean,num_episodes,genres,status,start_date',
             'description': 'Comma-separated list of fields to include in the response'
+        },
+        {
+            'name': 'min_rating',
+            'in': 'query',
+            'type': 'number',
+            'format': 'float',
+            'description': 'Minimum rating to filter results'
+        },
+        {
+            'name': 'max_rating',
+            'in': 'query',
+            'type': 'number',
+            'format': 'float',
+            'description': 'Maximum rating to filter results'
         }
     ],
     'responses': {
@@ -323,6 +336,8 @@ def get_seasonal_anime(year, season):
     limit = request.args.get('limit', 10)
     offset = request.args.get('offset', 0)
     fields = request.args.get('fields', 'id,title,mean,num_episodes,genres,status,start_date')
+    min_rating = request.args.get('min_rating', type=float)
+    max_rating = request.args.get('max_rating', type=float)
 
     params = {
         'sort': sort,
@@ -330,8 +345,19 @@ def get_seasonal_anime(year, season):
         'offset': offset,
         'fields': fields
     }
+    
     endpoint = f'{MYANIMELIST_API_URL}/season/{year}/{season}'
     result = make_mal_request(endpoint, params)
+
+    # Filter results based on min_rating and max_rating if provided
+    if min_rating is not None or max_rating is not None:
+        filtered_data = []
+        for item in result.get('data', []):
+            rating = item.get('node', {}).get('mean', 0)
+            if (min_rating is None or rating >= min_rating) and (max_rating is None or rating <= max_rating):
+                filtered_data.append(item)
+        result['data'] = filtered_data
+
     return jsonify(result)
 
 
