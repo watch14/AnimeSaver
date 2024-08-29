@@ -4,27 +4,36 @@
     <div v-if="!loading" class="saved-anime-container">
         <h1>Saved Anime</h1>
 
-        <!-- Filter Buttons -->
+        <!-- Filter Controls -->
         <div class="filter-controls">
             <button @click="generateShareableLink" class="share-button">Share</button>
-            <button @click="filter = 'all'" :class="{ active: filter === 'all' }">All</button>
-            <button @click="filter = 'watched'" :class="{ active: filter === 'watched' }">Watched</button>
-            <button @click="filter = 'unwatched'" :class="{ active: filter === 'unwatched' }">Unwatched</button>
+
+            <!-- Filter Dropdown -->
+            <select v-model="filter" @change="applyFilter" class="filter-dropdown">
+                <option value="all">All</option>
+                <option value="watched">Watched</option>
+                <option value="unwatched">Unwatched</option>
+            </select>
 
             <!-- Rating Filter -->
-            <select v-model="ratingFilter" @change="applyFilter">
+            <select v-model="ratingFilter" @change="applyFilter" class="rating-dropdown">
                 <option value="">Score</option>
                 <option v-for="rating in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" :key="rating" :value="rating">
                     {{ rating }} +
                 </option>
             </select>
 
+            <!-- Sort Dropdown -->
+            <select v-model="sortOrder" @change="applyFilter" class="sort-dropdown">
+                <option value="none">All</option>
+                <option value="asc">Asc</option>
+                <option value="desc">Desc</option>
+            </select>
+
             <div v-if="shareableLink" class="share-link">
                 <p>Share Your List: <a :href="shareableLink" target="_blank">{{ shareableLink }}</a></p>
             </div>
         </div>
-
-
 
         <!-- Anime List -->
         <div v-if="!loading && filteredAnimeList.length > 0" class="anime-grid">
@@ -57,6 +66,7 @@
     </div>
 </template>
 
+
 <script>
 import auth from '@/utils/auth';
 
@@ -70,6 +80,7 @@ export default {
             totalPages: 1,
             filter: 'all', // Default filter
             ratingFilter: '', // Default rating filter
+            sortOrder: 'none', // Default sort order
             shareableLink: '', // Store the generated link
             userId: null, // Initialize userId
             loading: false // Loading state
@@ -86,6 +97,9 @@ export default {
         ratingFilter() {
             this.applyFilter();
         },
+        sortOrder() {
+            this.applyFilter();
+        },
         currentPage() {
             this.fetchAnimeData(); // Fetch data based on updated page number
         }
@@ -96,6 +110,7 @@ export default {
             const offset = (this.currentPage - 1) * this.limit;
             try {
                 const userAnimeObjects = await auth.getUserAnimeList();
+                console.log('User Anime Objects:', userAnimeObjects); // Debugging line
                 const userAnimeIds = userAnimeObjects.map(anime => anime.id.toString());
 
                 if (userAnimeIds.length > 0) {
@@ -113,10 +128,14 @@ export default {
                         })
                     );
 
+                    console.log('Fetched Anime Data:', results); // Debugging line
+
                     this.animeList = results.map(data => ({
                         ...data,
                         watched: userAnimeObjects.find(anime => anime.id.toString() === data.id.toString()).watched
                     }));
+
+                    console.log('Processed Anime List:', this.animeList); // Debugging line
 
                     this.applyFilter();
                 } else {
@@ -144,6 +163,17 @@ export default {
 
             if (this.ratingFilter) {
                 list = list.filter(anime => anime.mean && anime.mean >= this.ratingFilter);
+            }
+
+            // Apply sorting if sortOrder is not 'none'
+            if (this.sortOrder !== 'none') {
+                list.sort((a, b) => {
+                    if (this.sortOrder === 'asc') {
+                        return (a.mean || 0) - (b.mean || 0);
+                    } else {
+                        return (b.mean || 0) - (a.mean || 0);
+                    }
+                });
             }
 
             this.filteredAnimeList = list;
@@ -191,7 +221,7 @@ export default {
             }
         },
         goToAnimePage(animeId) {
-            this.$router.push({ name: 'AnimeDetail', params: { id: animeId.toString() } });
+            this.$router.push(`/anime/${animeId}`);
         },
         prevPage() {
             if (this.currentPage > 1) {
@@ -203,47 +233,21 @@ export default {
                 this.currentPage++;
             }
         },
-        async generateShareableLink() {
-            const loggedIn = await auth.isLoggedIn();
-            if (loggedIn && this.userId) {
-                try {
-                    const response = await fetch('http://localhost:5000/api/share-list', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            userId: this.userId,
-                            animeList: this.animeList
-                        })
-                    });
+        generateShareableLink() {
+            const baseUrl = window.location.origin;
+            const path = '/shared-anime-list'; // Adjust path if needed
+            const queryParams = new URLSearchParams({
+                filter: this.filter,
+                rating: this.ratingFilter,
+                sortOrder: this.sortOrder
+            }).toString();
 
-                    const data = await response.json();
-                    if (response.ok) {
-                        this.shareableLink = data.link;
-
-                        // Copy to clipboard
-                        navigator.clipboard.writeText(this.shareableLink)
-                            .then(() => {
-                                console.log('Link copied to clipboard!');
-                                alert('Link copied to clipboard!');
-                            })
-                            .catch(err => {
-                                console.error('Failed to copy link: ', err);
-                            });
-                    } else {
-                        console.error('Error generating shareable link:', data);
-                    }
-                } catch (error) {
-                    console.error('Error generating shareable link:', error);
-                }
-            } else {
-                alert('Please log in to generate a shareable link.');
-            }
+            this.shareableLink = `${baseUrl}${path}?${queryParams}`;
         }
     }
 };
 </script>
+
 
 <style scoped>
 .saved-anime-container {
