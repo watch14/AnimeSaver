@@ -77,6 +77,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 40px;
   min-height: 100vh;
   margin: 0;
   background-color: #131212;
@@ -90,6 +91,7 @@ export default {
 
 /* Main heading style */
 h1 {
+  margin: 0;
   color: #5b22b6;
   margin-bottom: 20px;
   font-size: 2.5em;
