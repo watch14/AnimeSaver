@@ -47,7 +47,7 @@ export default {
         return {
             animeList: [],
             currentPage: 1,
-            limit: 10, // Number of items per page
+            limit: 21, // Number of items per page
             userAnimeList: [], // User's saved anime IDs
             loading: false, // Loading state
             username: '', // Username of the person sharing the list

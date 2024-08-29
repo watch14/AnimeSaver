@@ -21,7 +21,8 @@
         </div>
 
         <div class="anime-info-right">
-            <h1 class="anime-title">{{ anime.title }} {{ isAnimeWatched ? '(Watched)' : '(Unwatched)' }}</h1>
+            <h1 class="anime-title">{{ anime.title }} </h1>
+            <!-- <p>{{ isAnimeWatched ? '(Watched)' : '(Unwatched)' }}</p> -->
             <p class="anime-detail-text"><strong>Rating:</strong> {{ anime.mean ? anime.mean.toFixed(1) : 'N/A' }} / 10
             </p>
             <p class="anime-detail-text"><strong>Episodes:</strong> {{ anime.num_episodes }}</p>
