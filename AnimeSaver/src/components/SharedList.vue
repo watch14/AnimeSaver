@@ -47,7 +47,7 @@ export default {
         return {
             animeList: [],
             currentPage: 1,
-            limit: 21, // Number of items per page
+            limit: 10, // Number of items per page
             userAnimeList: [], // User's saved anime IDs
             loading: false, // Loading state
             username: '', // Username of the person sharing the list
@@ -57,19 +57,36 @@ export default {
         await this.loadUserAnimeList(); // Load the user's anime list
         await this.fetchSharedList(); // Fetch shared list data
     },
+    watch: {
+        currentPage() {
+            this.fetchSharedList(); // Re-fetch the data whenever the current page changes
+        }
+    },
     methods: {
         async fetchSharedList() {
             const offset = (this.currentPage - 1) * this.limit;
             this.loading = true;
             try {
-                const response = await fetch(`http://localhost:5000/api/shared-list/${this.link_id}?limit=${this.limit}&offset=${offset}`);
+                const response = await fetch(`http://localhost:5000/api/shared-list/${this.link_id}`);
                 const data = await response.json();
 
-                // Ensure data is in expected format
-                this.animeList = Array.isArray(data.animeList) ? data.animeList : [];
-                const userId = data['userId'] || 'Unknown'; // Get username from the response
-                this.username = await auth.getUserById(userId);
-                this.username = this.username.userName;
+                // Ensure the 'animeList' is an array
+                if (Array.isArray(data.animeList)) {
+                    // Slice the data according to the current page and limit
+                    this.animeList = data.animeList.slice(offset, offset + this.limit);
+                } else {
+                    console.error('animeList is not an array:', data);
+                    this.animeList = [];
+                }
+
+                // Get the username of the list owner
+                const userId = data.userId || 'Unknown';
+                const userInfo = await auth.getUserById(userId);
+                this.username = userInfo.userName || 'Unknown';
+
+                console.log(`Page: ${this.currentPage}, Offset: ${offset}, Limit: ${this.limit}`);
+                console.log('Displayed animeList:', this.animeList);
+
 
             } catch (error) {
                 console.error('Error fetching shared list data:', error);
@@ -78,7 +95,10 @@ export default {
             } finally {
                 this.loading = false;
             }
-        },
+        }
+
+        ,
+
         async loadUserAnimeList() {
             try {
                 const userAnimeObjects = await auth.getUserAnimeList();
@@ -88,18 +108,20 @@ export default {
                 this.userAnimeList = [];
             }
         },
+
         isAnimeInUserList(animeId) {
             return this.userAnimeList.includes(animeId.toString());
         },
+
         async handleSaveRemoveAnime(animeId) {
             const loggedIn = await auth.isLoggedIn();
             if (loggedIn) {
                 try {
                     if (this.isAnimeInUserList(animeId)) {
-                        await auth.removeAnimeFromUserList(animeId); // Remove anime from user list
+                        await auth.removeAnimeFromUserList(animeId); // Remove anime from the user's list
                         this.userAnimeList = this.userAnimeList.filter(id => id !== animeId.toString());
                     } else {
-                        await auth.addAnimeToUserList(animeId); // Add anime to user list
+                        await auth.addAnimeToUserList(animeId); // Add anime to the user's list
                         this.userAnimeList.push(animeId.toString());
                     }
                 } catch (error) {
@@ -109,18 +131,20 @@ export default {
                 alert('Please log in to add or remove anime from your list.');
             }
         },
+
         goToAnimePage(animeId) {
             this.$router.push({ name: 'AnimeDetail', params: { id: animeId.toString() } });
         },
+
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
                 this.fetchSharedList();
             }
         },
+
         nextPage() {
-            // Fetch new data if there's a possibility of more results
-            if (this.animeList.length === this.limit) {
+            if (this.animeList.length === this.limit) { // Only navigate forward if the current page is full
                 this.currentPage++;
                 this.fetchSharedList();
             }
@@ -150,20 +174,16 @@ export default {
     font-size: 14px;
     font-weight: 700;
     color: rgb(153, 153, 153);
-
 }
 
 .filter-container select {
     padding: 6px 12px;
     font-size: 16px;
     font-weight: 700;
-
     border-radius: 8px;
     border: none;
     color: white;
     background-color: #411d7a;
-
-
 }
 
 .anime-grid {
@@ -229,7 +249,6 @@ img.anime-image {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
 }
 
 /* Rating text styling */

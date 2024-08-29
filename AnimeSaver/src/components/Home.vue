@@ -3,7 +3,7 @@
 
     <div v-if="!loading" class="search-container">
         <h1>Welcome Home</h1>
-
+        <p>Upcoming Anime</p>
         <UpcomingAnime :initialRankingType="'upcoming'" />
 
     </div>
