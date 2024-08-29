@@ -7,6 +7,7 @@ import SearchResults from "@/components/SearchResults.vue";
 import Home from "../components/Home.vue";
 import SavedAnime from "@/components/SavedAnime.vue";
 import SharedList from "@/components/SharedList.vue";
+import TopAnime from "@/components/TopAnime.vue";
 
 const routes = [
   { path: "/", component: Home },
@@ -32,8 +33,14 @@ const routes = [
   {
     path: "/shared-list/:link_id",
     name: "SharedList",
-    component: SharedList, // The component to handle this route
-    props: true, // Pass route params as props to the component
+    component: SharedList,
+    props: true,
+  },
+  {
+    path: "/top-anime",
+    name: "ToipAnime",
+    component: TopAnime,
+    props: true,
   },
 ];
 

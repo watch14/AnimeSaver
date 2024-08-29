@@ -8,6 +8,7 @@
         <nav>
             <!-- Conditional rendering based on login status -->
             <span v-if="loggedIn" class="username">Hello, {{ username }}</span>
+            <router-link v-if="loggedIn" to="/top-anime">Top Anime</router-link>
             <router-link v-if="loggedIn" to="/saved-anime">Saved Anime</router-link>
             <router-link v-if="!loggedIn" to="/login">Login</router-link>
             <router-link v-if="!loggedIn" to="/register">Register</router-link>
