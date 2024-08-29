@@ -23,11 +23,12 @@
                 </option>
             </select>
 
-            <!-- Sort Dropdown -->
+            <!-- Sort Buttons -->
             <select v-model="sortOrder" @change="applyFilter" class="sort-dropdown">
-                <option value="none">All</option>
-                <option value="asc">Asc</option>
+                <option value="all">All</option>
+
                 <option value="desc">Desc</option>
+                <option value="asc">Asce</option>
             </select>
 
             <div v-if="shareableLink" class="share-link">
@@ -80,7 +81,7 @@ export default {
             totalPages: 1,
             filter: 'all', // Default filter
             ratingFilter: '', // Default rating filter
-            sortOrder: 'none', // Default sort order
+            sortOrder: 'asc', // Default sort order
             shareableLink: '', // Store the generated link
             userId: null, // Initialize userId
             loading: false // Loading state
@@ -95,9 +96,6 @@ export default {
             this.applyFilter();
         },
         ratingFilter() {
-            this.applyFilter();
-        },
-        sortOrder() {
             this.applyFilter();
         },
         currentPage() {
@@ -165,16 +163,14 @@ export default {
                 list = list.filter(anime => anime.mean && anime.mean >= this.ratingFilter);
             }
 
-            // Apply sorting if sortOrder is not 'none'
-            if (this.sortOrder !== 'none') {
-                list.sort((a, b) => {
-                    if (this.sortOrder === 'asc') {
-                        return (a.mean || 0) - (b.mean || 0);
-                    } else {
-                        return (b.mean || 0) - (a.mean || 0);
-                    }
-                });
-            }
+            // Apply sorting
+            list.sort((a, b) => {
+                if (this.sortOrder === 'asc') {
+                    return (a.mean || 0) - (b.mean || 0);
+                } else {
+                    return (b.mean || 0) - (a.mean || 0);
+                }
+            });
 
             this.filteredAnimeList = list;
             this.totalPages = Math.ceil(this.filteredAnimeList.length / this.limit);
@@ -221,7 +217,7 @@ export default {
             }
         },
         goToAnimePage(animeId) {
-            this.$router.push(`/anime/${animeId}`);
+            this.$router.push({ name: 'AnimeDetail', params: { id: animeId.toString() } });
         },
         prevPage() {
             if (this.currentPage > 1) {
@@ -233,16 +229,47 @@ export default {
                 this.currentPage++;
             }
         },
-        generateShareableLink() {
-            const baseUrl = window.location.origin;
-            const path = '/shared-anime-list'; // Adjust path if needed
-            const queryParams = new URLSearchParams({
-                filter: this.filter,
-                rating: this.ratingFilter,
-                sortOrder: this.sortOrder
-            }).toString();
+        async generateShareableLink() {
+            const loggedIn = await auth.isLoggedIn();
+            if (loggedIn && this.userId) {
+                try {
+                    const response = await fetch('http://localhost:5000/api/share-list', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: this.userId,
+                            animeList: this.animeList
+                        })
+                    });
 
-            this.shareableLink = `${baseUrl}${path}?${queryParams}`;
+                    const data = await response.json();
+                    if (response.ok) {
+                        this.shareableLink = data.link;
+
+                        // Copy to clipboard
+                        navigator.clipboard.writeText(this.shareableLink)
+                            .then(() => {
+                                console.log('Link copied to clipboard!');
+                                alert('Link copied to clipboard!');
+                            })
+                            .catch(err => {
+                                console.error('Failed to copy link: ', err);
+                            });
+                    } else {
+                        console.error('Error generating shareable link:', data);
+                    }
+                } catch (error) {
+                    console.error('Error generating shareable link:', error);
+                }
+            } else {
+                alert('Please log in to generate a shareable link.');
+            }
+        },
+        sortBy(order) {
+            this.sortOrder = order;
+            this.applyFilter(); // Reapply filter to sort the list
         }
     }
 };
