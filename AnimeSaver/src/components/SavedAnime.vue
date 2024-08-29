@@ -322,7 +322,7 @@ export default {
     position: absolute;
     top: 4px;
     right: 4px;
-    background-color: #57009e;
+    background-color: #6004d8;
     color: white;
     border: none;
     border-radius: 50%;
@@ -336,7 +336,7 @@ export default {
     font-weight: bold;
     transition: background-color 0.3s ease;
     border: #d6d6d6 2px solid;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .remove-button:hover {
