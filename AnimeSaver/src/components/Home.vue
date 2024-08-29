@@ -1,10 +1,11 @@
 <template>
-    <div class="search-container">
+    <div v-if="loading" class="loader">Searching...</div>
+
+    <div v-if="!loading" class="search-container">
         <h1>Welcome Home</h1>
 
-        <!-- Loader -->
-        <div v-if="loading" class="loader">Searching...</div>
         <UpcomingAnime :initialRankingType="'upcoming'" />
+
     </div>
 </template>
 
