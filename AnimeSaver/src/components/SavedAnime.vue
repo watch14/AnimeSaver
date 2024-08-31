@@ -28,7 +28,7 @@
                 <option value="all">All</option>
 
                 <option value="desc">Desc</option>
-                <option value="asc">Asce</option>
+                <option value="asc">Asc</option>
             </select>
 
             <div v-if="shareableLink" class="share-link">
@@ -40,8 +40,10 @@
         <div v-if="!loading && filteredAnimeList.length > 0" class="anime-grid">
             <div v-for="anime in filteredAnimeList" :key="anime.id" class="anime-card">
                 <button @click="handleRemoveAnime(anime.id)" class="remove-button">X</button>
-                <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
-                    class="anime-image" />
+                <div class="anime-image-container">
+                    <img @click="goToAnimePage(anime.id)" :src="anime.main_picture?.large" alt="Anime image"
+                        class="anime-image" />
+                </div>
                 <div class="anime-details">
                     <h2 class="anime-title">{{ anime.title }}</h2>
                     <div class="name-reate">
@@ -374,21 +376,37 @@ export default {
     background-color: #eb2d26;
 }
 
-img.anime-image {
-    max-height: 600px;
+.anime-image-container {
     width: 100%;
-    display: block;
-    object-fit: cover;
+    /* Set your desired width */
+    height: 100%;
+    max-height: 400px;
+    /* Set your desired height */
+    overflow: hidden;
+    /* Hide overflow to crop the image */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Ensure positioning for absolute elements */
 }
 
-.anime-details {
+/* Styling for the image */
+img.anime-image {
+    width: 100%;
     height: 100%;
+    object-fit: cover;
+
+}
+
+/* Styling for the details section */
+.anime-details {
+    height: 120px;
     padding: 16px;
     color: white;
     text-align: left;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
 .anime-title {
@@ -398,10 +416,7 @@ img.anime-image {
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    line-clamp: 2;
+    white-space: nowrap;
     cursor: pointer;
 }
 
