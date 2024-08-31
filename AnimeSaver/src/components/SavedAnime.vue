@@ -281,7 +281,7 @@ export default {
 <style scoped>
 .saved-anime-container {
     text-align: center;
-    padding: 40px;
+    padding: 20px 40px;
 }
 
 .filter-controls select {
@@ -326,8 +326,8 @@ export default {
 
 .anime-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 28px;
     margin-top: 20px;
 }
 

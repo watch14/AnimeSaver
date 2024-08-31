@@ -150,7 +150,7 @@ export default {
 /* Similar styles as your ranking results page */
 .ranking-results-container {
     text-align: center;
-    padding: 20px;
+    padding: 20px 40px;
 }
 
 /* Styling for the filter container */
@@ -184,8 +184,8 @@ export default {
 
 .anime-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 28px;
     margin-top: 20px;
 }
 

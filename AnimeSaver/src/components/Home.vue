@@ -32,7 +32,7 @@ export default {
 /* Styling for the search container */
 .search-container {
     text-align: center;
-    padding: 20px;
+    padding: 20px 40px;
 }
 
 /* Styling for the search bar */
