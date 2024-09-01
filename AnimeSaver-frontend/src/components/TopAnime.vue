@@ -77,7 +77,7 @@ export default {
             const offset = (this.currentPage - 1) * this.limit;
             this.loading = true; // Show loader
             try {
-                const response = await fetch(`http://localhost:5000/api/anime/ranking?ranking_type=${this.rankingType}&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,status,main_picture`);
+                const response = await fetch(`https://animesaver-backend.onrender.com/api/anime/ranking?ranking_type=${this.rankingType}&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,status,main_picture`);
                 const responseData = await response.json();
 
                 // Check if the 'data' field is an array and map it

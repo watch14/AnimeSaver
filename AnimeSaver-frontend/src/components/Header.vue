@@ -2,7 +2,7 @@
     <header class="header">
         <div class="logo">
             <router-link to="/">
-                <h1>AnimeSaver</h1>
+                <h1>AniSaver</h1>
             </router-link>
         </div>
         <div class="search-bar">

@@ -58,6 +58,12 @@ AnimeSaver is a Flask-based web application that allows users to manage and trac
    python app.py
    ```
 
+   or
+
+   ```bash
+   gunicorn -w 4 -b 0.0.0.0:5000 myapp:app
+   ```
+
    By default, the application will run on `http://127.0.0.1:5000`. You can change the port in the `app.py` file if needed.
 
 ## API Endpoints

@@ -101,7 +101,7 @@ export default {
             console.log(`Fetching with ratings: ${this.ratingMin} to ${this.ratingMax}, sort order: ${this.sortOrder}`); // Debugging log
             try {
                 const response = await fetch(
-                    `http://localhost:5000/api/anime/season/${this.year}/${this.season}?sort=mean&sort_order=${this.sortOrder}&limit=${this.limit}&offset=${offset}&min_rating=${this.ratingMin}&max_rating=${this.ratingMax}&fields=id,title,mean,num_episodes,genres,status,main_picture`
+                    `https://animesaver-backend.onrender.com/api/anime/season/${this.year}/${this.season}?sort=mean&sort_order=${this.sortOrder}&limit=${this.limit}&offset=${offset}&min_rating=${this.ratingMin}&max_rating=${this.ratingMax}&fields=id,title,mean,num_episodes,genres,status,main_picture`
                 );
                 const responseData = await response.json();
 

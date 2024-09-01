@@ -19,7 +19,7 @@
 import axios from 'axios';
 
 // Set the base URL for axios
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = 'https://animesaver-backend.onrender.com';
 
 export default {
     data() {

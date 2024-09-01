@@ -52,7 +52,7 @@ export default {
         async fetchAnimeRanking() {
             this.loading = true; // Show loader
             try {
-                const response = await fetch(`http://localhost:5000/api/anime/ranking?ranking_type=${this.rankingType}&limit=${this.limit}&fields=id,title,mean,num_episodes,main_picture`);
+                const response = await fetch(`https://animesaver-backend.onrender.com/api/anime/ranking?ranking_type=${this.rankingType}&limit=${this.limit}&fields=id,title,mean,num_episodes,main_picture`);
                 const responseData = await response.json();
 
                 // Check if the 'data' field is an array and map it

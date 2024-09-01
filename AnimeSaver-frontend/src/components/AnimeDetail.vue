@@ -62,7 +62,7 @@ export default {
     methods: {
         async fetchAnimeDetail() {
             try {
-                const response = await fetch(`http://localhost:5000/api/anime/${this.numericId}?fields=title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
+                const response = await fetch(`https://animesaver-backend.onrender.com/api/anime/${this.numericId}?fields=title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
                 const data = await response.json();
                 this.anime = data;
             } catch (error) {

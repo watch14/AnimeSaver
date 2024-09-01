@@ -112,3 +112,5 @@ For any questions or issues, please contact:
 ---
 
 Thank you for using the AnimeSaver App! We hope you find it useful and enjoyable.
+
+npm run serve -- --host 0.0.0.0 --port 8080 on server

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://animesaver-backend.onrender.com";
 
 const auth = {
   /**
@@ -51,7 +51,7 @@ const auth = {
         anime_id: animeId,
         watched: false,
       });
-      console.log(`Anime with ID ${animeId} added to the user's list.`);
+      // console.log(`Anime with ID ${animeId} added to the user's list.`);
     } catch (error) {
       console.error("Error adding anime to the user's list:", error);
     }
@@ -82,7 +82,7 @@ const auth = {
           "Content-Type": "application/json",
         },
       });
-      console.log(`Anime with ID ${animeId} removed from the user's list.`);
+      // console.log(`Anime with ID ${animeId} removed from the user's list.`);
     } catch (error) {
       console.error("Error removing anime from the user's list:", error);
     }
@@ -128,7 +128,7 @@ const auth = {
 
     try {
       const response = await axios.get(`/user/${userId}`);
-      console.log("User anime list:", response.data.savedList);
+      // console.log("User anime list:", response.data.savedList);
       return response.data.savedList || [];
     } catch (error) {
       console.error("Error fetching user anime list:", error);
@@ -169,7 +169,7 @@ const auth = {
 
       if (response.status === 200) {
         console.log(
-          `Anime with ID ${animeId} updated to watched status: ${watchedStatus}`
+          `Anime with ID ${animeId} updated to status: ${watchedStatus}`
         );
       } else {
         console.error(`Unexpected status code: ${response.status}`);

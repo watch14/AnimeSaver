@@ -69,7 +69,7 @@ export default {
             const offset = (this.currentPage - 1) * this.limit;
             this.loading = true;
             try {
-                const response = await fetch(`http://localhost:5000/api/shared-list/${this.link_id}`);
+                const response = await fetch(`https://animesaver-backend.onrender.com/api/shared-list/${this.link_id}`);
                 const data = await response.json();
 
                 // Ensure the 'animeList' is an array

@@ -70,7 +70,7 @@ export default {
             const offset = (this.currentPage - 1) * this.limit;
             this.loading = true; // Show loader
             try {
-                const response = await fetch(`http://localhost:5000/api/anime/search?q=${this.query}&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
+                const response = await fetch(`https://animesaver-backend.onrender.com/api/anime/search?q=${this.query}&limit=${this.limit}&offset=${offset}&fields=id,title,mean,num_episodes,genres,synopsis,start_date,end_date,status`);
                 const data = await response.json();
                 if (Array.isArray(data.data)) {
                     this.animeList = data.data.map(item => item.node);

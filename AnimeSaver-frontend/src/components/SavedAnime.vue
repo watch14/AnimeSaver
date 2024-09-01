@@ -69,7 +69,6 @@
     </div>
 </template>
 
-
 <script>
 import auth from '@/utils/auth';
 
@@ -97,6 +96,7 @@ export default {
         filter() {
             this.applyFilter();
         },
+
         ratingFilter() {
             this.applyFilter();
         },
@@ -110,12 +110,12 @@ export default {
             const offset = (this.currentPage - 1) * this.limit;
             try {
                 const userAnimeObjects = await auth.getUserAnimeList();
-                console.log('User Anime Objects:', userAnimeObjects); // Debugging line
+                // console.log('User Anime Objects:', userAnimeObjects); // Debugging line
                 const userAnimeIds = userAnimeObjects.map(anime => anime.id.toString());
 
                 if (userAnimeIds.length > 0) {
                     const requests = userAnimeIds.map(id =>
-                        fetch(`http://localhost:5000/api/anime/${id}?fields=id,title,mean,num_episodes,genres,synopsis,start_date,end_date,status`)
+                        fetch(`https://animesaver-backend.onrender.com/api/anime/${id}?fields=id,title,mean,num_episodes,genres,synopsis,start_date,end_date,status`)
                     );
 
                     const responses = await Promise.all(requests);
@@ -128,14 +128,14 @@ export default {
                         })
                     );
 
-                    console.log('Fetched Anime Data:', results); // Debugging line
+                    // console.log('Fetched Anime Data:', results); // Debugging line
 
                     this.animeList = results.map(data => ({
                         ...data,
                         watched: userAnimeObjects.find(anime => anime.id.toString() === data.id.toString()).watched
                     }));
 
-                    console.log('Processed Anime List:', this.animeList); // Debugging line
+                    // console.log('Processed Anime List:', this.animeList); // Debugging line
 
                     this.applyFilter();
                 } else {
@@ -235,7 +235,7 @@ export default {
             const loggedIn = await auth.isLoggedIn();
             if (loggedIn && this.userId) {
                 try {
-                    const response = await fetch('http://localhost:5000/api/share-list', {
+                    const response = await fetch('https://animesaver-backend.onrender.com/api/share-list', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -253,7 +253,7 @@ export default {
                         // Copy to clipboard
                         navigator.clipboard.writeText(this.shareableLink)
                             .then(() => {
-                                console.log('Link copied to clipboard!');
+                                // console.log('Link copied to clipboard!');
                                 alert('Link copied to clipboard!');
                             })
                             .catch(err => {
